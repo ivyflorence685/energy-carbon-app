@@ -1,18 +1,22 @@
-def get_float_input(prompt):
-    try:
-        return float(input(prompt))
-    except ValueError:
-        print("Invalid input! Please enter numbers only.")
-        return 0
+def calculate_daily_carbon(data, emission_factor=0.82):
+    result = {}
 
-electricity = get_float_input("Enter electricity: ")
-fuel = get_float_input("Enter fuel: ")
-production = get_float_input("Enter production: ")
+    for item in data:
+        day = item.get("day", "unknown")
 
-elec_factor = 0.82
-fuel_factor = 2.31
-production_factor = 1.5
+        try:
+            wattage = float(item.get("Wattage", 0))
+            hours = float(item.get("Utilization Hours", 0))
+        except:
+            wattage = 0
+            hours = 0
 
-total = (electricity * elec_factor) + (fuel * fuel_factor) + (production * production_factor)
+        units = (wattage * hours) / 1000
+        co2 = units * emission_factor
 
-print("Total emission:", total)
+        if day in result:
+            result[day] += co2
+        else:
+            result[day] = co2
+
+    return result
