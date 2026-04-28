@@ -1,5 +1,3 @@
-# app/models.py
-
 class ApplianceUsage:
     def __init__(self, data: dict):
         self.day = data.get("day", "unknown")
