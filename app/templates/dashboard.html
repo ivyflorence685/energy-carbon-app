@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Energy Carbon Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+
+    <h1>Energy & Carbon Dashboard</h1>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Energy (kWh)</h3>
+            <p>Mean: {{ energy.mean }}</p>
+            <p>SD: {{ energy.std }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Carbon (kg CO₂)</h3>
+            <p>Mean: {{ carbon.mean }}</p>
+            <p>SD: {{ carbon.std }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Usage (hrs)</h3>
+            <p>Mean: {{ usage.mean }}</p>
+            <p>SD: {{ usage.std }}</p>
+        </div>
+    </div>
+
+    <h2>Detailed Statistics</h2>
+
+    <table>
+        <tr>
+            <th>Variable</th>
+            <th>Mean</th>
+            <th>SD</th>
+            <th>Min</th>
+            <th>Max</th>
+        </tr>
+        <tr>
+            <td>Energy</td>
+            <td>{{ energy.mean }}</td>
+            <td>{{ energy.std }}</td>
+            <td>{{ energy.min }}</td>
+            <td>{{ energy.max }}</td>
+        </tr>
+        <tr>
+            <td>Carbon</td>
+            <td>{{ carbon.mean }}</td>
+            <td>{{ carbon.std }}</td>
+            <td>{{ carbon.min }}</td>
+            <td>{{ carbon.max }}</td>
+        </tr>
+        <tr>
+            <td>Usage</td>
+            <td>{{ usage.mean }}</td>
+            <td>{{ usage.std }}</td>
+            <td>{{ usage.min }}</td>
+            <td>{{ usage.max }}</td>
+        </tr>
+    </table>
+    
+    <h2>📊 Smart Insights</h2>
+
+<ul>
+    <li>🔌 Highest energy consuming appliance: <b>{{ insights.top_appliance }}</b></li>
+    <li>🏠 Most energy used in: <b>{{ insights.top_room }}</b></li>
+    <li>⚡ Average energy usage: <b>{{ insights.avg_energy }} kWh</b></li>
+    <li>📈 Energy usage pattern is <b>{{ insights.pattern }}</b></li>
+</ul>
+
+    <a href="/" class="nav-btn">← Back to Main Dashboard</a>
+
+</div>
+</body>
+</html>
