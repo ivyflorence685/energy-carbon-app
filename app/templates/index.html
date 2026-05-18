@@ -4,94 +4,144 @@
 <head>
     <title>Energy Dashboard</title>
 
-```
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-```
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
 
 <body>
 
-<header>
-    <h1>⚡ Energy Usage Dashboard</h1>
-    <a href="/dashboard" class="nav-btn">Go to Stats Dashboard →</a>
-</header>
+<div class="dashboard">
 
-<div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div  class="logo">🌿 EcoTrack</div>
 
-```
-<!-- Summary Cards -->
-<div class="cards">
-    <div class="card">
-        <h3>Total Energy</h3>
-        <p id="totalEnergy">0</p>
-    </div>
+        <nav>
+            <a href="#Main">🏠 Overview</a>
+            <a href="#Alerts">🚨 Alerts</a>
+            <a href="#Rooms">🏠 Rooms</a>
+            <a href="#Charts">📊 Charts</a>
+            <a href="#Analysis">📈 Analysis</a>
+            <a href="#Data">📋 Data</a>
+        </nav>
+    </aside>
 
-    <div class="card">
-        <h3>Total CO₂</h3>
-        <p id="totalCO2">0</p>
-    </div>
+    <!-- MAIN -->
+    <main id = "Main" class="main">
 
-    <div class="card">
-        <h3>Devices Used</h3>
-        <p id="devices">0</p>
-    </div>
+        <!-- HEADER -->
+        <header class="topbar">
+            <div>
+                <h1>Carbon Emission Dashboard</h1>
+                <p>Monitor energy consumption and sustainability metrics</p>
+            </div>
+
+            <div class="top-actions">
+                <button class="icon-button"><i class="fa-solid fa-bell" style="color: rgb(255, 255, 255);"></i></button>
+            </div>
+        </header>
+
+        <!-- CARDS -->
+        <section class="cards">
+            <div class="card">
+                <h4>Total Energy</h4>
+                <p id="totalEnergy">0</p>
+            </div>
+
+            <div class="card">
+                <h4>Total CO₂</h4>
+                <p id="totalCO2">0</p>
+            </div>
+
+            <div class="card">
+                <h4>Devices</h4>
+                <p id="devices">0</p>
+            </div>
+
+            <div class="card">
+                <h4>Peak Usage</h4>
+                <p id="peakUsage">--</p>
+            </div>
+        </section>
+
+        <!-- ALERT -->
+        <section id = "Alerts" class="alerts">
+            <div class="alerts-header">
+               <h3>⚠ Active Alerts & Notifications</h3>
+            </div>
+
+           <div id="alertsList" class="alerts-container"></div>
+        </section>
+
+        <!-- FLEX -->
+         <section id="Rooms" class="room-wise">
+         <div class ="room-cards-header">
+            <h3>Room-wise Analysis</h3>
+          </div>
+        <div class="room-container">
+  <div class="room-card" onclick="goToRoom('living')">
+    <h3>Living Room</h3>
+  </div>
+
+  <div class="room-card" onclick="goToRoom('kitchen')">
+    <h3>Kitchen</h3>
+  </div>
+
+  <div class="room-card" onclick="goToRoom('bedroom')">
+    <h3>Bedroom</h3>
+  </div>
+
+  <div class="room-card" onclick="goToRoom('bathroom')">
+    <h3>Bathroom</h3>
+  </div>
+
+  <div class="room-card" onclick="goToRoom('study')">
+    <h3>Study</h3>
+  </div>
+
+  <div class="room-card" onclick="goToRoom('dining')">
+    <h3>Dining Room</h3>
+  </div>
 </div>
+</section>
+        <!-- FILTER -->
+        <section class="filter">
+            <select id="daySelector"></select>
 
-<!-- Table -->
-<h2>🔌 Appliance Summary</h2>
-<table id="applianceTable">
-    <tr>
-        <th>Appliance</th>
-        <th>Total Hours</th>
-        <th>Total Energy</th>
-        <th>Avg Energy</th>
-    </tr>
-</table>
+            <input type="range" id="daySlider" min="1" max="10" value="1">
+            <span id="sliderValue">Day 1</span>
+        </section>
 
-<h2>🏠 Room Summary</h2>
-<table id="roomTable">
-    <tr>
-        <th>Room</th>
-        <th>Total Energy</th>
-        <th>Total CO₂</th>
-    </tr>
-</table>
+        <!-- CHARTS -->
+        <section id="Charts" class="charts">
+            <div class="chart-card">
+                <h3>Energy Usage</h3>
+                <canvas id="energyChart"></canvas>
+            </div>
 
-<h2>📅 Daily Summary</h2>
-<table id="dayTable">
-    <tr>
-        <th>Day</th>
-        <th>Total Energy</th>
-        <th>Total CO₂</th>
-    </tr>
-</table>
+            <div class="chart-card">
+                <h3>CO₂ Emissions</h3>
+                <canvas id="co2Chart"></canvas>
+            </div>
+        </section>
 
-<!-- Charts -->
- <h3>📅 Select Day</h3>
+        <!-- TABLE -->
+        <section id="Data" class="table-section">
+            <h3>Appliance Data</h3>
+            <table id="applianceTable"></table>
 
-<select id="daySelector">
-    <option value="all">All Days</option>
-</select>
+            <h3>Room Data</h3>
+            <table id="roomTable"></table>
 
-<input type="range" id="daySlider" min="1" max="5" value="1">
-<p>Selected Day: <span id="sliderValue">Day 1</span></p>
+            <h3>Day Data</h3>
+            <table id="dayTable"></table>
+        </section>
 
-
-<h2>📊 Energy Usage Chart</h2>
-<canvas id="energyChart"></canvas>
-
-<h2>📈 CO₂ Emissions Chart</h2>
-<canvas id="co2Chart"></canvas>
-
-<!-- Alerts -->
-<h2>⚠️ Alerts</h2>
-<ul id="alertsList"></ul>
-```
-
+    </main>
 </div>
 <script>
 window.onload = function(){ 
@@ -99,263 +149,214 @@ fetch("/data")
   .then(res => res.json())
   .then(data => {
 
-    // 🔹 Cards + Charts variables
-    let totalEnergy = 0;
-    let totalCO2 = 0;
+    let fullData = data;
 
-    let labels = [];
-    let energyData = [];
-    let co2Data = [];
+    let energyChart, co2Chart;
 
-    // 🔹 Aggregation maps
-    let applianceMap = {};
-    let roomMap = {};
-    let dayMap = {};
-
-    let alertBox = document.getElementById("alertsList");
-    alertBox.innerHTML = "";
-
-    // 🔹 LOOP
-    data.forEach(item => {
-
-      let energy = Number(item["Energy Consumption in units"]);
-      let co2 = Number(item["CO2 emissions in kg"]);
-      let hours = Number(item["Utilization Hours"]);
-
-      totalEnergy += energy;
-      totalCO2 += co2;
-
-      labels.push(item["Appliance"]);
-      energyData.push(energy);
-      co2Data.push(co2);
-
-      let appliance = item["Appliance"];
-      let room = item["Room"];
-      let day = item["day"];
-
-      // 🔹 Appliance aggregation
-      if (!applianceMap[appliance]) {
-        applianceMap[appliance] = { hours: 0, energy: 0, count: 0 };
-      }
-      applianceMap[appliance].hours += hours;
-      applianceMap[appliance].energy += energy;
-      applianceMap[appliance].count++;
-
-      // 🔹 Room aggregation
-      if (!roomMap[room]) {
-        roomMap[room] = { energy: 0, co2: 0 };
-      }
-      roomMap[room].energy += energy;
-      roomMap[room].co2 += co2;
-
-      // 🔹 Day aggregation
-      if (!dayMap[day]) {
-        dayMap[day] = { energy: 0, co2: 0 };
-      }
-      dayMap[day].energy += energy;
-      dayMap[day].co2 += co2;
-
-      // 🔹 Alerts
-      if (energy > 1.5) {
-        let li = document.createElement("li");
-        li.textContent = "⚠ High energy usage in " + room;
-        alertBox.appendChild(li);
-      }
-
-      if (hours > 10) {
-        let li = document.createElement("li");
-        li.textContent = "⚠ Excess usage of " + appliance;
-        alertBox.appendChild(li);
-      }
-
-    });
-
-    if (alertBox.children.length === 0) {
-      alertBox.innerHTML = "<li>No alerts</li>";
+    function normalizeDay(day) {
+        return day.toLowerCase().replace("_", " ");
     }
 
-    // 🔹 Update cards
-    document.getElementById("totalEnergy").innerText = totalEnergy.toFixed(2);
-    document.getElementById("totalCO2").innerText = totalCO2.toFixed(2);
-    document.getElementById("devices").innerText = data.length;
-
-    // 🔹 Charts
     function filterByDay(data, selectedDay) {
-    if (selectedDay === "all") return data;
-    return data.filter(item => item.day === selectedDay);
-}
+        if (selectedDay === "all") return data;
 
-    function getApplianceData(filteredData) {
-    let map = {};
-
-    filteredData.forEach(item => {
-        let appliance = item["Appliance"];
-        let energy = Number(item["Energy Consumption in units"]);
-
-        map[appliance] = (map[appliance] || 0) + energy;
-    });
-
-    return {
-        labels: Object.keys(map),
-        values: Object.values(map)
-    };
-}
-    let energyChart;
-
-function renderChart(labels, values) {
-
-    if (energyChart) {
-        energyChart.destroy();
+        return data.filter(item => 
+            normalizeDay(item.day) === normalizeDay(selectedDay)
+        );
     }
 
-    energyChart = new Chart(document.getElementById("energyChart"), {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Energy Consumption",
-                data: values
-            }]
+    function aggregateAppliance(data) {
+        let map = {};
+        data.forEach(item => {
+            let key = item["Appliance"];
+            let energy = Number(item["Energy Consumption in units"]);
+            let co2 = Number(item["CO2 emissions in kg"]);
+
+            if (!map[key]) map[key] = { energy: 0, co2: 0 };
+
+            map[key].energy += energy;
+            map[key].co2 += co2;
+        });
+
+        return map;
+    }
+
+    function renderCharts(filtered) {
+        let map = aggregateAppliance(filtered);
+
+        let labels = Object.keys(map);
+        let energyValues = labels.map(k => map[k].energy);
+        let co2Values = labels.map(k => map[k].co2);
+
+        if (energyChart) energyChart.destroy();
+        if (co2Chart) co2Chart.destroy();
+
+        energyChart = new Chart(document.getElementById("energyChart"), {
+            type: "bar",
+            data: {
+                labels,
+                datasets: [{
+                    label: "Energy",
+                    data: energyValues
+                }]
+            }
+        });
+
+        co2Chart = new Chart(document.getElementById("co2Chart"), {
+            type: "bar",
+            data: {
+                labels,
+                datasets: [{
+                    label: "CO2",
+                    data: co2Values
+                }]
+            }
+        });
+    }
+
+    function renderTables(filtered) {
+
+        let applianceMap = {};
+        let roomMap = {};
+        let dayMap = {};
+
+        filtered.forEach(item => {
+            let energy = Number(item["Energy Consumption in units"]);
+            let co2 = Number(item["CO2 emissions in kg"]);
+            let hours = Number(item["Utilization Hours"]);
+
+            let appliance = item["Appliance"];
+            let room = item["Room"];
+            let day = item["day"];
+
+            if (!applianceMap[appliance]) {
+                applianceMap[appliance] = { hours: 0, energy: 0, count: 0 };
+            }
+            applianceMap[appliance].hours += hours;
+            applianceMap[appliance].energy += energy;
+            applianceMap[appliance].count++;
+
+            if (!roomMap[room]) {
+                roomMap[room] = { energy: 0, co2: 0 };
+            }
+            roomMap[room].energy += energy;
+            roomMap[room].co2 += co2;
+
+            if (!dayMap[day]) {
+                dayMap[day] = { energy: 0, co2: 0 };
+            }
+            dayMap[day].energy += energy;
+            dayMap[day].co2 += co2;
+        });
+
+        // Appliance Table
+        let aTable = document.getElementById("applianceTable");
+        aTable.innerHTML = `<tr><th>Appliance</th><th>Total Hours</th><th>Total Energy</th><th>Avg Energy</th></tr>`;
+
+        for (let key in applianceMap) {
+            let obj = applianceMap[key];
+            let avg = obj.energy / obj.count;
+
+            aTable.innerHTML += `
+            <tr>
+              <td>${key}</td>
+              <td>${obj.hours}</td>
+              <td>${obj.energy.toFixed(2)}</td>
+              <td>${avg.toFixed(2)}</td>
+            </tr>`;
         }
-    });
-}
+
+        // Room Table
+        let rTable = document.getElementById("roomTable");
+        rTable.innerHTML = `<tr><th>Room</th><th>Total Energy</th><th>Total CO₂</th></tr>`;
+
+        for (let key in roomMap) {
+            let obj = roomMap[key];
+            rTable.innerHTML += `
+            <tr>
+              <td>${key}</td>
+              <td>${obj.energy.toFixed(2)}</td>
+              <td>${obj.co2.toFixed(2)}</td>
+            </tr>`;
+        }
+
+        // Day Table
+        let dTable = document.getElementById("dayTable");
+        dTable.innerHTML = `<tr><th>Day</th><th>Total Energy</th><th>Total CO₂</th></tr>`;
+
+        for (let key in dayMap) {
+            let obj = dayMap[key];
+            dTable.innerHTML += `
+            <tr>
+              <td>${key}</td>
+              <td>${obj.energy.toFixed(2)}</td>
+              <td>${obj.co2.toFixed(2)}</td>
+            </tr>`;
+        }
+    }
+
+    function renderAlerts(filtered) {
+        let alertBox = document.getElementById("alertsList");
+        alertBox.innerHTML = "";
+
+        filtered.forEach(item => {
+            let energy = Number(item["Energy Consumption in units"]);
+            let hours = Number(item["Utilization Hours"]);
+
+            if (energy > 1.5) {
+                let li = document.createElement("li");
+                li.textContent = "⚠ High energy in " + item["Room"];
+                alertBox.appendChild(li);
+            }
+
+            if (hours > 10) {
+                let li = document.createElement("li");
+                li.textContent = "⚠ Overuse of " + item["Appliance"];
+                alertBox.appendChild(li);
+            }
+        });
+
+        if (alertBox.children.length === 0) {
+            alertBox.innerHTML = "<li>No alerts</li>";
+        }
+    }
+
+    function updateView(selectedDay) {
+        let filtered = filterByDay(fullData, selectedDay);
+
+        renderCharts(filtered);
+        renderTables(filtered);
+        renderAlerts(filtered);
+    }
+
     function populateDays(data) {
-    let selector = document.getElementById("daySelector");
-    let days = [...new Set(data.map(item => item.day))];
+        let selector = document.getElementById("daySelector");
+        let days = [...new Set(data.map(item => normalizeDay(item.day)))];
 
-    days.forEach(day => {
-        let option = document.createElement("option");
-        option.value = day;
-        option.textContent = day;
-        selector.appendChild(option);
-    });
-}
-let fullData = [];
-
-function updateView(selectedDay) {
-
-    let filtered = filterByDay(fullData, selectedDay);
-
-    // 🔹 Charts
-    let applianceData = getApplianceData(filtered);
-    renderChart(applianceData.labels, applianceData.values);
-
-    // 🔹 Alerts (filtered)
-    let alertBox = document.getElementById("alertsList");
-    alertBox.innerHTML = "";
-
-    filtered.forEach(item => {
-        let energy = Number(item["Energy Consumption in units"]);
-        let hours = Number(item["Utilization Hours"]);
-
-        if (energy > 1.5) {
-            let li = document.createElement("li");
-            li.textContent = "⚠ High energy in " + item["Room"];
-            alertBox.appendChild(li);
-        }
-
-        if (hours > 10) {
-            let li = document.createElement("li");
-            li.textContent = "⚠ Overuse of " + item["Appliance"];
-            alertBox.appendChild(li);
-        }
-    });
-
-    if (alertBox.children.length === 0) {
-        alertBox.innerHTML = "<li>No alerts</li>";
+        days.forEach(day => {
+            let option = document.createElement("option");
+            option.value = day;
+            option.textContent = day;
+            selector.appendChild(option);
+        });
     }
-}
-fullData = data;
 
-    populateDays(data);
-
+    populateDays(fullData);
     updateView("all");
 
-    // 🔹 Dropdown
     document.getElementById("daySelector").addEventListener("change", function() {
         updateView(this.value);
     });
 
-    // 🔹 Slider
     document.getElementById("daySlider").addEventListener("input", function() {
-        let day = "Day " + this.value;
+        let day = "day " + this.value;
         document.getElementById("sliderValue").innerText = day;
         updateView(day);
     });
 
-    // 🔹 Fill Appliance Table
-    let aTable = document.getElementById("applianceTable");
-    aTable.innerHTML = `
-      <tr>
-        <th>Appliance</th>
-        <th>Total Hours</th>
-        <th>Total Energy</th>
-        <th>Avg Energy</th>
-      </tr>
-    `;
-
-    for (let key in applianceMap) {
-      let obj = applianceMap[key];
-      let avg = obj.energy / obj.count;
-
-      aTable.innerHTML += `
-        <tr>
-          <td>${key}</td>
-          <td>${obj.hours}</td>
-          <td>${obj.energy.toFixed(2)}</td>
-          <td>${avg.toFixed(2)}</td>
-        </tr>
-      `;
-    }
-
-    // 🔹 Fill Room Table
-    let rTable = document.getElementById("roomTable");
-    rTable.innerHTML = `
-      <tr>
-        <th>Room</th>
-        <th>Total Energy</th>
-        <th>Total CO₂</th>
-      </tr>
-    `;
-
-    for (let key in roomMap) {
-      let obj = roomMap[key];
-
-      rTable.innerHTML += `
-        <tr>
-          <td>${key}</td>
-          <td>${obj.energy.toFixed(2)}</td>
-          <td>${obj.co2.toFixed(2)}</td>
-        </tr>
-      `;
-    }
-
-    // 🔹 Fill Day Table
-    let dTable = document.getElementById("dayTable");
-    dTable.innerHTML = `
-      <tr>
-        <th>Day</th>
-        <th>Total Energy</th>
-        <th>Total CO₂</th>
-      </tr>
-    `;
-
-    for (let key in dayMap) {
-      let obj = dayMap[key];
-
-      dTable.innerHTML += `
-        <tr>
-          <td>${key}</td>
-          <td>${obj.energy.toFixed(2)}</td>
-          <td>${obj.co2.toFixed(2)}</td>
-        </tr>
-      `;
-    }
-
   });
-} 
+}
 </script>
-
 </body>
 </html>
 
