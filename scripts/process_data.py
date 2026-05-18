@@ -28,7 +28,6 @@ def calculate_daily_units(data):
         result[day]["units"] += units
 
     # Add alerts
-    from app.utils.alerts import check_high_usage
     for day in result:
         result[day]["alert"] = check_high_usage(result[day]["units"])
 
