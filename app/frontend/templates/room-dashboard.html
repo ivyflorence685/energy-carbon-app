@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Room Dashboard</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+  <!-- ======================================
+      HEADER
+  ======================================= -->
+
+  <div class="top-banner">
+
+    <button class="back-btn" onclick="goBack()">←</button>
+
+    <div>
+
+     <h1 id="roomTitle"></h1>
+
+      <p style="color:rgb(203, 213, 225); margin-top: 8px;">
+        Detailed energy consumption and smart meter readings
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================
+      STATS
+  ======================================= -->
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <h3>Total Energy</h3>
+      <h2>213.35 kWh</h2>
+    </div>
+
+    <div class="stat-card">
+      <h3>Carbon Emission</h3>
+      <h2>174.98 kg</h2>
+    </div>
+
+    <div class="stat-card">
+      <h3>Daily Average</h3>
+      <h2>30.48 kWh</h2>
+    </div>
+
+    <div class="stat-card">
+      <h3>Peak Usage</h3>
+      <h2>45.00 kWh</h2>
+    </div>
+
+  </div>
+
+  <!-- ======================================
+      SMART METER
+  ======================================= -->
+
+  <div class="meter-section">
+
+    <div class="meter-box">
+
+      <h2>Smart Meter Readings</h2>
+
+      <div class="power-reading" id="power"> 0 W </div>
+
+      <div class="meter-grid">
+
+        <div class="meter-card">
+
+          <h3>Voltage</h3>
+
+          <p id="voltage">0</p>
+
+        </div>
+
+        <div class="meter-card">
+
+          <h3>Current</h3>
+
+          <p id="current">0</p>
+
+        </div>
+
+        <div class="meter-card">
+
+          <h3>Power Factor</h3>
+
+          <p id="pf">0</p>
+
+        </div>
+
+        <div class="meter-card">
+
+          <h3>Energy</h3>
+
+          <p id="energy">0</p>
+
+        </div>
+
+        <div class="meter-card">
+
+          <h3>Carbon</h3>
+
+          <p id="carbon">0</p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================
+      CHARTS
+  ======================================= -->
+
+  <div class="charts-grid">
+
+    <div class="chart-card">
+
+      <h2>Weekly Energy Trend</h2>
+
+      <canvas id="lineChart"></canvas>
+
+    </div>
+
+    <div class="chart-card">
+
+      <h2>Appliance Consumption</h2>
+
+      <canvas id="barChart"></canvas>
+
+    </div>
+
+  </div>
+
+    <script>
+
+
+   // ======================================
+   // ROOM TITLE
+   // ======================================
+
+const room = "{{ room_name }}";
+
+console.log(room);
+
+const roomNames = {
+
+    "living-room": "Living Room",
+
+    "kitchen": "Kitchen",
+
+    "bedroom": "Bedroom",
+
+    "bathroom": "Bathroom",
+
+    "study-room": "Study Room",
+
+    "dining-room": "Dining Room"
+};
+
+// SET TITLE
+
+if(roomNames[room]){
+
+    document.getElementById("roomTitle").innerText =
+    roomNames[room] + " Analysis";
+}
+
+    // ======================================
+    // BACK BUTTON
+    // ======================================
+
+    function goBack(){
+
+      window.location.href = "/";
+    }
+
+    // ======================================
+    // LOAD SMART METER DATA
+    // ======================================
+
+    async function loadMeterData(){
+
+      const response =
+      await fetch("/meter-data");
+
+      const data =
+      await response.json();
+
+      document.getElementById("power")
+      .innerText =
+      data.power_watts + " W";
+
+      document.getElementById("voltage")
+      .innerText =
+      data.voltage + " V";
+
+      document.getElementById("current")
+      .innerText =
+      data.current + " A";
+
+      document.getElementById("pf")
+      .innerText =
+      data.power_factor;
+
+      document.getElementById("energy")
+      .innerText =
+      data.daily_energy_kwh + " kWh";
+
+      document.getElementById("carbon")
+      .innerText =
+      data.carbon_kg + " kg";
+    }
+
+    loadMeterData();
+
+    setInterval(loadMeterData, 3000);
+
+    // ======================================
+    // LINE CHART
+    // ======================================
+
+    new Chart(
+      document.getElementById("lineChart"),
+    {
+      type:"line",
+
+      data:{
+
+        labels:[
+          "Mon","Tue","Wed",
+          "Thu","Fri","Sat","Sun"
+        ],
+
+        datasets:[
+          {
+            label:"Energy",
+
+            data:[
+              10,40,55,36,20,28,29
+            ],
+
+            tension:0.4
+          }
+        ]
+      }
+    });
+
+    // ======================================
+    // BAR CHART
+    // ======================================
+
+    new Chart(
+      document.getElementById("barChart"),
+    {
+      type:"bar",
+
+      data:{
+
+        labels:[
+          "AC",
+          "TV",
+          "Fan",
+          "Light"
+        ],
+
+        datasets:[
+          {
+            label:"Consumption",
+
+            data:[
+              165,
+              20,
+              15,
+              10
+            ]
+          }
+        ]
+      }
+    });
+
+  </script>
+
+</body>
+</html>
