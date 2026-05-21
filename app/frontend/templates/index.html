@@ -907,11 +907,30 @@ function deleteRoom(id) {
 // GO TO ROOM
 // =========================================
 
-function goToRoom(room_name) {
+function goToRoom(room_name){
+
+    // Store readable room label
+
+    localStorage.setItem(
+        "selectedRoomLabel",
+        room_name
+    );
+
+    // Create URL slug
+
+    const roomSlug =
+
+        room_name
+        .toLowerCase()
+        .replaceAll(" ", "-");
+
+    // Navigate
 
     window.location.href =
-    "/room?room=" +
-    encodeURIComponent(room_name);
+
+      "/room?room=" +
+
+      encodeURIComponent(roomSlug);
 }
 
 

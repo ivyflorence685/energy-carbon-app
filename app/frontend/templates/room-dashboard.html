@@ -152,15 +152,24 @@
     <script>
 
 
-   // ======================================
-   // ROOM TITLE
-   // ======================================
+   // =========================================
+// ROOM FROM URL
+// =========================================
 
-const room = "{{ room_name }}";
+const params =
+new URLSearchParams(window.location.search);
+
+const room =
+params.get("room");
 
 console.log(room);
 
-const roomNames = {
+
+// =========================================
+// ROOM DISPLAY NAMES
+// =========================================
+
+const roomDisplayNames = {
 
     "living-room": "Living Room",
 
@@ -175,13 +184,40 @@ const roomNames = {
     "dining-room": "Dining Room"
 };
 
+
+// =========================================
+// DISPLAY NAME
+// =========================================
+
+// Try localStorage label first
+
+const selectedRoomLabel =
+localStorage.getItem("selectedRoomLabel");
+
+
+// Use:
+// 1. stored label
+// 2. mapped display name
+// 3. fallback raw room
+
+const displayName =
+
+    selectedRoomLabel ||
+
+    roomDisplayNames[room] ||
+
+    room;
+
+
+// =========================================
 // SET TITLE
+// =========================================
 
-if(roomNames[room]){
+document
+.getElementById("roomTitle")
+.innerText =
 
-    document.getElementById("roomTitle").innerText =
-    roomNames[room] + " Analysis";
-}
+displayName + " Analysis";
 
     // ======================================
     // BACK BUTTON
