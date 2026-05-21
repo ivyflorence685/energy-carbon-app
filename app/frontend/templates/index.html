@@ -159,7 +159,7 @@
         <!-- ANALYSIS -->
 
          <!-- TABLE HEADER -->
-        <div class="box-header">
+        <div id="Data" class="box-header">
            <div class="container">
              <div class="flex-wrapper">
 
@@ -244,309 +244,411 @@
 window.onload = function () {
 
     // =========================================
-    // FETCH DATA
+    // STORAGE KEY
     // =========================================
 
-    fetch("/data")
-    .then(res => res.json())
-    .then(data => {
+    const STORAGE_KEY = "ecotrack-rooms-v1";
 
-        let fullData = data;
+    // =========================================
+    // DEFAULT ROOMS
+    // =========================================
 
-        let energyChart;
-        let co2Chart;
+    const DEFAULT_ROOMS = {
 
-        let currentPage = 1;
+        "living-room": [{
+            id: "default-living",
+            name: "Living Room"
+        }],
 
-        const rowsPerPage = 10;
+        "kitchen": [{
+            id: "default-kitchen",
+            name: "Kitchen"
+        }],
 
-        let tableData = [];
+        "bedroom": [{
+            id: "default-bedroom",
+            name: "Master Bedroom"
+        }],
 
-        // =========================================
-        // NORMALIZE DAY
-        // =========================================
+        "bathroom": [{
+            id: "default-bathroom",
+            name: "Bathroom"
+        }],
 
-        function normalizeDay(day) {
+        "study-room": [{
+            id: "default-study",
+            name: "Study Room"
+        }],
 
-            return day.toLowerCase().replace("_", " ");
+        "dining-room": [{
+            id: "default-dining",
+            name: "Dining Room"
+        }]
+    };
+
+    // =========================================
+    // ROOM CONFIG
+    // =========================================
+
+    const ROOM_CONFIG = {
+
+        "living-room": {
+            title: "Living Room",
+            image: "/static/images/living.jpg",
+            icon: "🏠"
+        },
+
+        "kitchen": {
+            title: "Kitchen",
+            image: "/static/images/kitchen.jpg",
+            icon: "🍴"
+        },
+
+        "bedroom": {
+            title: "Bedroom",
+            image: "/static/images/bedroom.jpg",
+            icon: "🛏"
+        },
+
+        "bathroom": {
+            title: "Bathroom",
+            image: "/static/images/bathroom.jpg",
+            icon: "🚿"
+        },
+
+        "study-room": {
+            title: "Study Room",
+            image: "/static/images/study.jpg",
+            icon: "📚"
+        },
+
+        "dining-room": {
+            title: "Dining Room",
+            image: "/static/images/dining.jpg",
+            icon: "🍽"
         }
+    };
 
-        // =========================================
-        // FILTER BY DAY
-        // =========================================
+    // =========================================
+    // GLOBAL VARIABLES
+    // =========================================
 
-        function filterByDay(data, selectedDay) {
+    let fullData = [];
 
-            if (selectedDay === "all") return data;
+    let energyChart;
+    let co2Chart;
 
-            return data.filter(item =>
-                normalizeDay(item.day) === normalizeDay(selectedDay)
+    let currentPage = 1;
+
+    const rowsPerPage = 10;
+
+    let tableData = [];
+
+    let currentCategory = "";
+
+    let rooms = [];
+
+    // =========================================
+    // INITIALIZE ROOM STORAGE
+    // =========================================
+
+    function initializeRoomStorage() {
+
+        let stored = localStorage.getItem(STORAGE_KEY);
+
+        if (!stored) {
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(DEFAULT_ROOMS)
             );
         }
+    }
 
-        // =========================================
-        // AGGREGATE APPLIANCE
-        // =========================================
+    initializeRoomStorage();
 
-        function aggregateAppliance(data) {
+    // =========================================
+    // NORMALIZE DAY
+    // =========================================
 
-            let map = {};
+    function normalizeDay(day) {
 
-            data.forEach(item => {
+        return day.toLowerCase().replace("_", " ");
+    }
 
-                let key = item["Appliance"];
+    // =========================================
+    // FILTER BY DAY
+    // =========================================
 
-                let energy =
+    function filterByDay(data, selectedDay) {
+
+        if (selectedDay === "all") return data;
+
+        return data.filter(item =>
+            normalizeDay(item.day) === normalizeDay(selectedDay)
+        );
+    }
+
+    // =========================================
+    // AGGREGATE APPLIANCE
+    // =========================================
+
+    function aggregateAppliance(data) {
+
+        let map = {};
+
+        data.forEach(item => {
+
+            let key = item["Appliance"];
+
+            let energy =
                 Number(item["Energy Consumption in units"]);
 
-                let co2 =
+            let co2 =
                 Number(item["CO2 emissions in kg"]);
 
-                if (!map[key]) {
+            if (!map[key]) {
 
-                    map[key] = {
-                        energy: 0,
-                        co2: 0
-                    };
-                }
+                map[key] = {
+                    energy: 0,
+                    co2: 0
+                };
+            }
 
-                map[key].energy += energy;
-                map[key].co2 += co2;
-            });
+            map[key].energy += energy;
+            map[key].co2 += co2;
+        });
 
-            return map;
-        }
+        return map;
+    }
 
-        // =========================================
-        // RENDER CHARTS
-        // =========================================
+    // =========================================
+    // RENDER CHARTS
+    // =========================================
 
-        function renderCharts(filtered) {
+    function renderCharts(filtered) {
 
-            let map =
-            aggregateAppliance(filtered);
+        let map = aggregateAppliance(filtered);
 
-            let labels =
-            Object.keys(map);
+        let labels = Object.keys(map);
 
-            let energyValues =
+        let energyValues =
             labels.map(k => map[k].energy);
 
-            let co2Values =
+        let co2Values =
             labels.map(k => map[k].co2);
 
-            if (energyChart) energyChart.destroy();
-            if (co2Chart) co2Chart.destroy();
+        if (energyChart) energyChart.destroy();
+        if (co2Chart) co2Chart.destroy();
 
-            energyChart = new Chart(
-                document.getElementById("energyChart"),
-                {
-                    type: "bar",
+        energyChart = new Chart(
+            document.getElementById("energyChart"),
+            {
+                type: "bar",
 
-                    data: {
-                        labels,
+                data: {
+                    labels,
 
-                        datasets: [{
-                            label: "Energy",
-                            data: energyValues
-                        }]
-                    }
+                    datasets: [{
+                        label: "Energy",
+                        data: energyValues
+                    }]
                 }
-            );
+            }
+        );
 
-            co2Chart = new Chart(
-                document.getElementById("co2Chart"),
-                {
-                    type: "bar",
+        co2Chart = new Chart(
+            document.getElementById("co2Chart"),
+            {
+                type: "bar",
 
-                    data: {
-                        labels,
+                data: {
+                    labels,
 
-                        datasets: [{
-                            label: "CO2",
-                            data: co2Values
-                        }]
-                    }
+                    datasets: [{
+                        label: "CO2",
+                        data: co2Values
+                    }]
                 }
-            );
-        }
+            }
+        );
+    }
 
-        // =========================================
-        // RENDER TABLE
-        // =========================================
+    // =========================================
+    // RENDER TABLE
+    // =========================================
 
-        function renderTables(filtered) {
+    function renderTables(filtered) {
 
-            tableData = filtered;
+        tableData = filtered;
 
-            let tableBody =
+        let tableBody =
             document.getElementById("applianceTable");
 
-            tableBody.innerHTML = "";
+        tableBody.innerHTML = "";
 
-            let startIndex =
+        let startIndex =
             (currentPage - 1) * rowsPerPage;
 
-            let endIndex =
+        let endIndex =
             startIndex + rowsPerPage;
 
-            let currentRows =
+        let currentRows =
             filtered.slice(startIndex, endIndex);
 
-            currentRows.forEach(item => {
+        currentRows.forEach(item => {
 
-                tableBody.innerHTML += `
-                <tr>
-                    <td>${item.day}</td>
-                    <td>${item.Room}</td>
-                    <td>${item.Appliance}</td>
-                    <td>${item["Number of appliance in use"]}</td>
-                    <td>${item["Utilization Hours"]}</td>
+            tableBody.innerHTML += `
+            <tr>
+                <td>${item.day}</td>
+                <td>${item.Room}</td>
+                <td>${item.Appliance}</td>
+                <td>${item["Number of appliance in use"]}</td>
+                <td>${item["Utilization Hours"]}</td>
 
-                    <td class="energy">
-                        ${Number(item["Energy Consumption in units"]).toFixed(2)}
-                    </td>
+                <td class="energy">
+                    ${Number(item["Energy Consumption in units"]).toFixed(2)}
+                </td>
 
-                    <td class="co2">
-                        ${Number(item["CO2 emissions in kg"]).toFixed(2)}
-                    </td>
-                </tr>
-                `;
-            });
+                <td class="co2">
+                    ${Number(item["CO2 emissions in kg"]).toFixed(2)}
+                </td>
+            </tr>
+            `;
+        });
 
-            let totalEntries =
-            filtered.length;
+        let totalEntries = filtered.length;
 
-            let totalPages =
-            Math.ceil(totalEntries / rowsPerPage);
+        let totalPages =
+            Math.ceil(totalEntries / rowsPerPage) || 1;
 
-            document.getElementById("tableInfo").innerText =
+        document.getElementById("tableInfo").innerText =
             `Showing ${startIndex + 1} to ${Math.min(endIndex, totalEntries)} of ${totalEntries} entries`;
 
-            document.getElementById("pageInfo").innerText =
+        document.getElementById("pageInfo").innerText =
             `Page ${currentPage} of ${totalPages}`;
 
-            let prevButton =
+        let prevButton =
             document.getElementById("prevBtn");
 
-            let nextButton =
+        let nextButton =
             document.getElementById("nextBtn");
 
-            prevButton.disabled =
+        prevButton.disabled =
             currentPage === 1;
 
-            nextButton.disabled =
+        nextButton.disabled =
             currentPage === totalPages;
-        }
+    }
 
-        // =========================================
-        // RENDER ALERTS
-        // =========================================
+    // =========================================
+    // RENDER ALERTS
+    // =========================================
 
-        function renderAlerts(filtered) {
+    function renderAlerts(filtered) {
 
-            let alertBox =
+        let alertBox =
             document.getElementById("alertsList");
 
-            alertBox.innerHTML = "";
+        alertBox.innerHTML = "";
 
-            filtered.forEach(item => {
+        filtered.forEach(item => {
 
-                let energy =
+            let energy =
                 Number(item["Energy Consumption in units"]);
 
-                let hours =
+            let hours =
                 Number(item["Utilization Hours"]);
 
-                // HIGH ENERGY ALERT
+            // HIGH ENERGY ALERT
 
-                if (energy > 1.5) {
+            if (energy > 1.5) {
 
-                    let li =
+                let li =
                     document.createElement("li");
 
-                    li.textContent =
+                li.textContent =
                     "⚠ High energy usage in " +
                     item["Room"];
 
-                    alertBox.appendChild(li);
-                }
+                alertBox.appendChild(li);
+            }
 
-                // OVERUSE ALERT
+            // OVERUSE ALERT
 
-                if (hours > 10) {
+            if (hours > 10) {
 
-                    let li =
+                let li =
                     document.createElement("li");
 
-                    li.textContent =
+                li.textContent =
                     "⚠ Overuse of " +
                     item["Appliance"];
 
-                    alertBox.appendChild(li);
-                }
-            });
-
-            if (alertBox.children.length === 0) {
-
-                alertBox.innerHTML =
-                "<li>No alerts</li>";
+                alertBox.appendChild(li);
             }
+        });
+
+        if (alertBox.children.length === 0) {
+
+            alertBox.innerHTML =
+                "<li>No alerts</li>";
         }
+    }
 
-        // =========================================
-        // UPDATE VIEW
-        // =========================================
+    // =========================================
+    // UPDATE VIEW
+    // =========================================
 
-        function updateView(selectedDay) {
+    function updateView(selectedDay) {
 
-            currentPage = 1;
+        currentPage = 1;
 
-            let filtered =
+        let filtered =
             filterByDay(fullData, selectedDay);
 
-            renderCharts(filtered);
+        renderCharts(filtered);
 
-            renderTables(filtered);
+        renderTables(filtered);
 
-            renderAlerts(filtered);
-        }
+        renderAlerts(filtered);
+    }
 
-        // =========================================
-        // POPULATE DAYS
-        // =========================================
+    // =========================================
+    // POPULATE DAYS
+    // =========================================
 
-        function populateDays(data) {
+    function populateDays(data) {
 
-            let selector =
+        let selector =
             document.getElementById("daySelector");
 
-            let days = [
-                ...new Set(
-                    data.map(item =>
-                        normalizeDay(item.day)
-                    )
+        let days = [
+            ...new Set(
+                data.map(item =>
+                    normalizeDay(item.day)
                 )
-            ];
+            )
+        ];
 
-            days.forEach(day => {
+        days.forEach(day => {
 
-                let option =
+            let option =
                 document.createElement("option");
 
-                option.value = day;
+            option.value = day;
 
-                option.textContent = day;
+            option.textContent = day;
 
-                selector.appendChild(option);
-            });
-        }
+            selector.appendChild(option);
+        });
+    }
 
-        // =========================================
-        // PREVIOUS BUTTON
-        // =========================================
+    // =========================================
+    // PREVIOUS BUTTON
+    // =========================================
 
-        document
+    document
         .getElementById("prevBtn")
         .addEventListener("click", () => {
 
@@ -558,16 +660,16 @@ window.onload = function () {
             }
         });
 
-        // =========================================
-        // NEXT BUTTON
-        // =========================================
+    // =========================================
+    // NEXT BUTTON
+    // =========================================
 
-        document
+    document
         .getElementById("nextBtn")
         .addEventListener("click", () => {
 
             let totalPages =
-            Math.ceil(tableData.length / rowsPerPage);
+                Math.ceil(tableData.length / rowsPerPage);
 
             if (currentPage < totalPages) {
 
@@ -577,167 +679,140 @@ window.onload = function () {
             }
         });
 
-        // =========================================
-        // INITIALIZE
-        // =========================================
+    // =========================================
+    // FETCH DATA
+    // =========================================
 
-        populateDays(fullData);
+    fetch("/data")
+        .then(res => res.json())
 
-        updateView("all");
+        .then(data => {
 
-        // =========================================
-        // DAY SELECTOR
-        // =========================================
+            fullData = data;
 
-        document
-        .getElementById("daySelector")
-        .addEventListener("change", function () {
+            populateDays(fullData);
 
-            updateView(this.value);
-        });
+            updateView("all");
 
-        // =========================================
-        // SLIDER
-        // =========================================
-
-        document
-        .getElementById("daySlider")
-        .addEventListener("input", function () {
-
-            let day =
-            "day " + this.value;
+            // =========================================
+            // DAY SELECTOR
+            // =========================================
 
             document
-            .getElementById("sliderValue")
-            .innerText = day;
+                .getElementById("daySelector")
+                .addEventListener("change", function () {
 
-            updateView(day);
+                    updateView(this.value);
+                });
+
+            // =========================================
+            // SLIDER
+            // =========================================
+
+            document
+                .getElementById("daySlider")
+                .addEventListener("input", function () {
+
+                    let day =
+                        "day " + this.value;
+
+                    document
+                        .getElementById("sliderValue")
+                        .innerText = day;
+
+                    updateView(day);
+                });
+        })
+
+        .catch(error => {
+
+            console.error("Error fetching data:", error);
         });
 
-    })
-    .catch(error => {
+    // =========================================
+    // OPEN MODAL
+    // =========================================
 
-        console.error("Error fetching data:", error);
-    });
+    window.openRoomModal = function (category) {
 
-}; // END window.onload
+        currentCategory = category;
 
+        let config = ROOM_CONFIG[category];
 
-// =========================================
-// ROOM CONFIG
-// =========================================
+        document
+            .getElementById("categoryTitle")
+            .innerText = config.title;
 
-const ROOM_CONFIG = {
+        document
+            .getElementById("modalImage")
+            .src = config.image;
 
-    "living-room": {
-        title: "Living Room",
-        image: "/static/images/living.jpg",
-        icon: "🏠"
-    },
+        document
+            .getElementById("modalIcon")
+            .innerText = config.icon;
 
-    "kitchen": {
-        title: "Kitchen",
-        image: "/static/images/kitchen.jpg",
-        icon: "🍴"
-    },
+        document
+            .getElementById("modalOverlay")
+            .classList.remove("hidden");
 
-    "bedroom": {
-        title: "Bedroom",
-        image: "/static/images/bedroom.jpg",
-        icon: "🛏"
-    },
+        loadRooms(category);
+    };
 
-    "bathroom": {
-        title: "Bathroom",
-        image: "/static/images/bathroom.jpg",
-        icon: "🚿"
-    },
+    // =========================================
+    // CLOSE MODAL
+    // =========================================
 
-    "study-room": {
-        title: "Study Room",
-        image: "/static/images/study.jpg",
-        icon: "📚"
-    },
+    window.closeModal = function () {
 
-    "dining-room": {
-        title: "Dining Room",
-        image: "/static/images/dining.jpg",
-        icon: "🍽"
+        document
+            .getElementById("modalOverlay")
+            .classList.add("hidden");
+    };
+
+    // =========================================
+    // LOAD ROOMS
+    // =========================================
+
+    function loadRooms(category) {
+
+        let stored =
+            localStorage.getItem(STORAGE_KEY);
+
+        let allRooms =
+            stored ? JSON.parse(stored) : {};
+
+        if (
+            !allRooms[category] ||
+            allRooms[category].length === 0
+        ) {
+
+            allRooms[category] =
+                DEFAULT_ROOMS[category];
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(allRooms)
+            );
+        }
+
+        rooms = allRooms[category];
+
+        renderRooms();
     }
-};
 
+    // =========================================
+    // SAVE ROOMS
+    // =========================================
 
-// =========================================
-// STORAGE
-// =========================================
+    function saveRooms() {
 
-const STORAGE_KEY = "ecotrack-rooms-v1";
+        let stored =
+            localStorage.getItem(STORAGE_KEY);
 
-let currentCategory = "";
+        let allRooms =
+            stored ? JSON.parse(stored) : {};
 
-let rooms = [];
-
-
-// =========================================
-// OPEN MODAL
-// =========================================
-
-function openRoomModal(category) {
-
-    currentCategory = category;
-
-    let config = ROOM_CONFIG[category];
-
-    document
-    .getElementById("categoryTitle")
-    .innerText = config.title;
-
-    document
-    .getElementById("modalImage")
-    .src = config.image;
-
-    document
-    .getElementById("modalIcon")
-    .innerText = config.icon;
-
-    document
-    .getElementById("modalOverlay")
-    .classList.remove("hidden");
-
-    loadRooms(category);
-}
-
-
-// =========================================
-// CLOSE MODAL
-// =========================================
-
-function closeModal() {
-
-    document
-    .getElementById("modalOverlay")
-    .classList.add("hidden");
-}
-
-
-// =========================================
-// LOAD ROOMS
-// =========================================
-
-function loadRooms(category) {
-
-    let stored =
-    localStorage.getItem(STORAGE_KEY);
-
-    let allRooms =
-    stored ? JSON.parse(stored) : {};
-
-    if (!allRooms[category]) {
-
-        allRooms[category] = [{
-            id: "default",
-            name: ROOM_CONFIG[category].title
-        }];
+        allRooms[currentCategory] = rooms;
 
         localStorage.setItem(
             STORAGE_KEY,
@@ -745,243 +820,266 @@ function loadRooms(category) {
         );
     }
 
-    rooms = allRooms[category];
+    // =========================================
+    // RENDER ROOMS
+    // =========================================
 
-    renderRooms();
-}
+    function renderRooms() {
 
+        const roomList =
+            document.getElementById("roomList");
 
-// =========================================
-// SAVE ROOMS
-// =========================================
-
-function saveRooms() {
-
-    let stored =
-    localStorage.getItem(STORAGE_KEY);
-
-    let allRooms =
-    stored ? JSON.parse(stored) : {};
-
-    allRooms[currentCategory] = rooms;
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(allRooms)
-    );
-}
-
-
-// =========================================
-// RENDER ROOMS
-// =========================================
-
-function renderRooms() {
-
-    const roomList =
-    document.getElementById("roomList");
-
-    roomList.innerHTML = "";
-
-    document
-    .getElementById("roomCount")
-    .innerText =
-    `${rooms.length} rooms configured`;
-
-    rooms.forEach(room => {
-
-        let div =
-        document.createElement("div");
-
-        div.className = "room-item";
-
-        div.innerHTML = `
-
-        <button
-            class="room-btn"
-            onclick="goToRoom('${room.name}')"
-        >
-            <span>${room.name}</span>
-            <span>›</span>
-        </button>
-
-        <button
-            class="delete-btn"
-            onclick="deleteRoom('${room.id}')"
-        >
-            🗑
-        </button>
-
-        `;
-
-        roomList.appendChild(div);
-    });
-}
-
-
-// =========================================
-// SHOW ADD ROOM
-// =========================================
-
-const addRoomBtn =
-document.getElementById("showAddRoomBtn");
-
-if (addRoomBtn) {
-
-    addRoomBtn.addEventListener("click", () => {
+        roomList.innerHTML = "";
 
         document
-        .getElementById("addRoomForm")
-        .classList.remove("hidden");
+            .getElementById("roomCount")
+            .innerText =
+            `${rooms.length} rooms configured`;
+
+        rooms.forEach(room => {
+
+            let div =
+                document.createElement("div");
+
+            div.className = "room-item";
+
+            div.innerHTML = `
+
+            <button
+                class="room-btn"
+                onclick="goToRoom('${room.name}')"
+            >
+                <span>${room.name}</span>
+                <span>›</span>
+            </button>
+
+            <div class="room-actions">
+
+                <button
+                    class="rename-btn"
+                    onclick="renameRoom('${room.id}')"
+                >
+                    ✏
+                </button>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteRoom('${room.id}')"
+                >
+                    🗑
+                </button>
+
+            </div>
+            `;
+
+            roomList.appendChild(div);
+        });
+    }
+
+    // =========================================
+    // SHOW ADD ROOM
+    // =========================================
+
+    const addRoomBtn =
+        document.getElementById("showAddRoomBtn");
+
+    if (addRoomBtn) {
+
+        addRoomBtn.addEventListener("click", () => {
+
+            document
+                .getElementById("addRoomForm")
+                .classList.remove("hidden");
+
+            document
+                .getElementById("showAddRoomBtn")
+                .classList.add("hidden");
+        });
+    }
+
+    // =========================================
+    // CANCEL ADD ROOM
+    // =========================================
+
+    window.cancelAddRoom = function () {
 
         document
-        .getElementById("showAddRoomBtn")
-        .classList.add("hidden");
+            .getElementById("addRoomForm")
+            .classList.add("hidden");
+
+        document
+            .getElementById("showAddRoomBtn")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("roomInput")
+            .value = "";
+    };
+
+    // =========================================
+    // ADD ROOM
+    // =========================================
+
+    window.addRoom = function () {
+
+        let input =
+            document.getElementById("roomInput");
+
+        let name =
+            input.value.trim();
+
+        if (!name) {
+
+            alert("Enter room name");
+
+            return;
+        }
+
+        let exists = rooms.some(room =>
+            room.name.toLowerCase() ===
+            name.toLowerCase()
+        );
+
+        if (exists) {
+
+            alert("Room already exists");
+
+            return;
+        }
+
+        rooms.push({
+
+            id: Date.now().toString(),
+
+            name: name
+        });
+
+        saveRooms();
+
+        renderRooms();
+
+        cancelAddRoom();
+    };
+
+    // =========================================
+    // RENAME ROOM
+    // =========================================
+
+    window.renameRoom = function (id) {
+
+        let room =
+            rooms.find(room => room.id === id);
+
+        if (!room) return;
+
+        let newName =
+            prompt("Rename room", room.name);
+
+        if (!newName) return;
+
+        newName = newName.trim();
+
+        if (newName === "") return;
+
+        room.name = newName;
+
+        saveRooms();
+
+        renderRooms();
+    };
+
+    // =========================================
+    // DELETE ROOM
+    // =========================================
+
+    window.deleteRoom = function (id) {
+
+        if (rooms.length === 1) {
+
+            alert(
+                "At least one room is required"
+            );
+
+            return;
+        }
+
+        rooms =
+            rooms.filter(room => room.id !== id);
+
+        saveRooms();
+
+        renderRooms();
+    };
+
+    // =========================================
+    // GO TO ROOM
+    // =========================================
+
+    window.goToRoom = function (room_name) {
+
+        localStorage.setItem(
+            "selectedRoomLabel",
+            room_name
+        );
+
+        const roomSlug =
+
+            room_name
+                .toLowerCase()
+                .replaceAll(" ", "-");
+
+        window.location.href =
+            "/room?room=" +
+            encodeURIComponent(roomSlug);
+    };
+
+    // =========================================
+    // OUTSIDE CLICK
+    // =========================================
+
+    document
+        .getElementById("modalOverlay")
+        .addEventListener("click", function (e) {
+
+            if (e.target === this) {
+
+                closeModal();
+            }
+        });
+
+    // =========================================
+    // ESC CLOSE
+    // =========================================
+
+    document.addEventListener("keydown", function (e) {
+
+        if (e.key === "Escape") {
+
+            closeModal();
+        }
     });
-}
 
+    // =========================================
+    // BACK BUTTON
+    // =========================================
 
-// =========================================
-// CANCEL ADD ROOM
-// =========================================
+    window.goBack = function () {
 
-function cancelAddRoom() {
+        window.location.href = "index.html";
+    };
 
-    document
-    .getElementById("addRoomForm")
-    .classList.add("hidden");
+    // =========================================
+    // GO TO DASHBOARD
+    // =========================================
 
-    document
-    .getElementById("showAddRoomBtn")
-    .classList.remove("hidden");
+    window.goToDashboard = function () {
 
-    document
-    .getElementById("roomInput")
-    .value = "";
-}
+        document
+            .getElementById("modalOverlay")
+            .classList.add("hidden");
+    };
 
-
-// =========================================
-// ADD ROOM
-// =========================================
-
-function addRoom() {
-
-    let input =
-    document.getElementById("roomInput");
-
-    let name =
-    input.value.trim();
-
-    if (!name) return;
-
-    rooms.push({
-        id: Date.now().toString(),
-        name: name
-    });
-
-    saveRooms();
-
-    renderRooms();
-
-    cancelAddRoom();
-}
-
-
-// =========================================
-// DELETE ROOM
-// =========================================
-
-function deleteRoom(id) {
-
-    rooms =
-    rooms.filter(room => room.id !== id);
-
-    saveRooms();
-
-    renderRooms();
-}
-
-
-// =========================================
-// GO TO ROOM
-// =========================================
-
-function goToRoom(room_name){
-
-    // Store readable room label
-
-    localStorage.setItem(
-        "selectedRoomLabel",
-        room_name
-    );
-
-    // Create URL slug
-
-    const roomSlug =
-
-        room_name
-        .toLowerCase()
-        .replaceAll(" ", "-");
-
-    // Navigate
-
-    window.location.href =
-
-      "/room?room=" +
-
-      encodeURIComponent(roomSlug);
-}
-
-
-// =========================================
-// OUTSIDE CLICK
-// =========================================
-
-document
-.getElementById("modalOverlay")
-.addEventListener("click", function (e) {
-
-    if (e.target === this) {
-
-        closeModal();
-    }
-});
-
-
-// =========================================
-// ESC CLOSE
-// =========================================
-
-document.addEventListener("keydown", function (e) {
-
-    if (e.key === "Escape") {
-
-        closeModal();
-    }
-});
-
-
-// =========================================
-// BACK BUTTON
-// =========================================
-
-function goBack() {
-
-    window.location.href = "index.html";
-}
-
-
-// =========================================
-// GO BACK TO DASHBOARD
-// =========================================
-
-function goToDashboard() {
-
-    document
-    .getElementById("modalOverlay")
-    .classList.add("hidden");
-}
+};
 
 </script>
 
