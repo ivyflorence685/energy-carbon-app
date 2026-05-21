@@ -440,9 +440,46 @@ td{
 }
 
 .room-item{
-    display:flex;
-    gap:10px;
-    margin-bottom:10px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 14px 18px;
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.05);
+
+    margin-bottom: 12px;
+
+    transition: 0.25s ease;
+}
+
+.room-item:hover{
+
+    background: rgba(255,255,255,0.08);
+}
+
+.room-name{
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+.room-name:hover{
+
+    opacity: 0.8;
+}
+
+.room-left{
+
+    flex: 1;
 }
 
 .room-btn{
@@ -455,15 +492,6 @@ td{
     cursor:pointer;
     display:flex;
     justify-content:space-between;
-}
-
-.delete-btn{
-    width:50px;
-    border:none;
-    background:#1e293b;
-    color:red;
-    border-radius:12px;
-    cursor:pointer;
 }
 
 .add-room-btn{
@@ -508,4 +536,81 @@ td{
     border:none;
     color:#94a3b8;
     cursor:pointer;
+}
+
+.empty-room-state{
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    opacity: 0.8;
+}
+
+.empty-icon{
+
+    font-size: 40px;
+
+    margin-bottom: 12px;
+}
+
+.empty-title{
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: white;
+
+    margin-bottom: 6px;
+}
+
+.empty-subtitle{
+
+    font-size: 14px;
+
+    color: rgba(255,255,255,0.6);
+}
+
+.room-actions{
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.rename-btn,
+.delete-btn{
+
+    width: 36px;
+
+    height: 36px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    background: rgba(255,255,255,0.08);
+
+    color: white;
+
+    transition: 0.25s ease;
+}
+
+.rename-btn:hover{
+
+    background: rgba(59,130,246,0.25);
+
+    transform: scale(1.05);
+}
+
+.delete-btn:hover{
+
+    background: rgba(239,68,68,0.25);
+
+    transform: scale(1.05);
 }

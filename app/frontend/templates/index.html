@@ -826,55 +826,69 @@ window.onload = function () {
 
     function renderRooms() {
 
-        const roomList =
-            document.getElementById("roomList");
+    const roomList =
+    document.getElementById("roomList");
 
-        roomList.innerHTML = "";
+    roomList.innerHTML = "";
 
-        document
-            .getElementById("roomCount")
-            .innerText =
-            `${rooms.length} rooms configured`;
+    document
+    .getElementById("roomCount")
+    .innerText =
+    `${rooms.length} rooms configured`;
 
-        rooms.forEach(room => {
+    rooms.forEach(room => {
 
-            let div =
-                document.createElement("div");
+        let div =
+        document.createElement("div");
 
-            div.className = "room-item";
+        div.className = "room-item";
 
-            div.innerHTML = `
+        div.innerHTML = `
 
-            <button
-                class="room-btn"
-                onclick="goToRoom('${room.name}')"
+        <div class="room-left">
+
+            <div
+                class="room-name-container"
             >
-                <span>${room.name}</span>
-                <span>›</span>
-            </button>
 
-            <div class="room-actions">
-
-                <button
-                    class="rename-btn"
-                    onclick="renameRoom('${room.id}')"
+                <span
+                    class="room-name"
+                    id="room-name-${room.id}"
+                    ondblclick="enableRename('${room.id}')"
+                    onclick="goToRoom('${room.name}')"
                 >
-                    ✏
-                </button>
-
-                <button
-                    class="delete-btn"
-                    onclick="deleteRoom('${room.id}')"
-                >
-                    🗑
-                </button>
+                    ${room.name}
+                </span>
 
             </div>
-            `;
 
-            roomList.appendChild(div);
-        });
-    }
+        </div>
+
+        <div class="room-actions">
+
+            <button
+                class="rename-btn"
+                onclick="enableRename('${room.id}')"
+                title="Rename Room"
+            >
+                ✏
+            </button>
+
+            <button
+                class="delete-btn"
+                onclick="deleteRoom('${room.id}')"
+                title="Delete Room"
+            >
+                🗑
+            </button>
+
+        </div>
+
+        `;
+
+        roomList.appendChild(div);
+    });
+}
 
     // =========================================
     // SHOW ADD ROOM
@@ -989,28 +1003,230 @@ window.onload = function () {
     };
 
     // =========================================
-    // DELETE ROOM
+// DELETE ROOM
+// =========================================
+
+window.deleteRoom = function (id) {
+
+    // =========================================
+    // REMOVE ROOM
     // =========================================
 
-    window.deleteRoom = function (id) {
+    rooms =
+    rooms.filter(room => room.id !== id);
 
-        if (rooms.length === 1) {
+    // =========================================
+    // SAVE UPDATED ROOMS
+    // =========================================
 
-            alert(
-                "At least one room is required"
-            );
+    saveRooms();
+
+    // =========================================
+    // IF ALL ROOMS DELETED
+    // SHOW EMPTY STATE
+    // =========================================
+
+    if (rooms.length === 0) {
+
+        document
+        .getElementById("roomList")
+        .innerHTML = `
+
+        <div class="empty-room-state">
+
+            <div class="empty-icon">
+                🏠
+            </div>
+
+            <div class="empty-title">
+                No rooms added
+            </div>
+
+            <div class="empty-subtitle">
+                Add a new room to continue
+            </div>
+
+        </div>
+        `;
+
+        document
+        .getElementById("roomCount")
+        .innerText =
+        "0 rooms configured";
+
+        return;
+    }
+
+    // =========================================
+    // NORMAL RENDER
+    // =========================================
+
+    renderRooms();
+};
+
+    // =========================================
+// ENABLE RENAME
+// =========================================
+
+window.enableRename = function (id) {
+
+    // =========================================
+    // FIND ROOM
+    // =========================================
+
+    let room =
+    rooms.find(room => room.id === id);
+
+    if (!room) return;
+
+    // =========================================
+    // GET ELEMENT
+    // =========================================
+
+    const span =
+    document.getElementById(`room-name-${id}`);
+
+    const oldName =
+    room.name;
+
+    // =========================================
+    // REPLACE WITH INPUT
+    // =========================================
+
+    span.innerHTML = `
+
+    <input
+        type="text"
+        id="rename-input-${id}"
+        value="${oldName}"
+        class="rename-input"
+    >
+    `;
+
+    // =========================================
+    // GET INPUT
+    // =========================================
+
+    const input =
+    document.getElementById(`rename-input-${id}`);
+
+    input.focus();
+
+    input.select();
+
+    // =========================================
+    // PREVENT ROOM NAVIGATION
+    // =========================================
+
+    input.addEventListener("click", function(e){
+
+        e.stopPropagation();
+    });
+
+    input.addEventListener("keydown", function(e){
+
+        e.stopPropagation();
+    });
+
+    input.addEventListener("keyup", function(e){
+
+        e.stopPropagation();
+    });
+
+    // =========================================
+    // SAVE RENAME
+    // =========================================
+
+    function saveRename() {
+
+        let newName =
+        input.value.trim();
+
+        // =====================================
+        // EMPTY NAME -> RESTORE OLD
+        // =====================================
+
+        if (!newName) {
+
+            newName = oldName;
+        }
+
+        // =====================================
+        // DUPLICATE CHECK
+        // =====================================
+
+        let duplicate =
+        rooms.some(r =>
+
+            r.name.toLowerCase() ===
+            newName.toLowerCase()
+
+            &&
+
+            r.id !== id
+        );
+
+        if (duplicate) {
+
+            alert("Room already exists");
+
+            input.focus();
 
             return;
         }
 
-        rooms =
-            rooms.filter(room => room.id !== id);
+        // =====================================
+        // SAVE
+        // =====================================
+
+        room.name = newName;
 
         saveRooms();
 
         renderRooms();
-    };
+    }
 
+    // =========================================
+    // KEY EVENTS
+    // =========================================
+
+    input.addEventListener(
+        "keydown",
+        function (e) {
+
+            // =================================
+            // ENTER -> SAVE
+            // =================================
+
+            if (e.key === "Enter") {
+
+                e.preventDefault();
+
+                saveRename();
+            }
+
+            // =================================
+            // ESC -> CANCEL
+            // =================================
+
+            if (e.key === "Escape") {
+
+                e.preventDefault();
+
+                renderRooms();
+            }
+        }
+    );
+
+    // =========================================
+    // CLICK OUTSIDE -> SAVE
+    // =========================================
+
+    input.addEventListener(
+        "blur",
+        saveRename
+    );
+};
     // =========================================
     // GO TO ROOM
     // =========================================
