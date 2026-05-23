@@ -156,27 +156,89 @@
             </div>
         </section>
 
-        <!-- ANALYSIS -->
+        
+<!-- ========================================= -->
+<!-- DETAILED ANALYSIS -->
+<!-- ========================================= -->
 
-         <!-- TABLE HEADER -->
-        <div id="Data" class="box-header">
-           <div class="container">
-             <div class="flex-wrapper">
+    <div class="box-header">
+            <div class="container">
+                <div class="flex-wrapper">
+                    <div class="icon-box"><i class="fa-solid fa-lightbulb"></i></div>
+                       <div class="header-content">
+                        <h3>Detailed Analysis</h3>
+                        <p>Insights and recommendations for energy optimization</p>
+                        </div>
+                </div>
+            </div>
+      </div>
+     
+    <div class="analysis-container">
 
-            <!-- Icon -->
-            <div class="icon-box">
-                <i class="fa-solid fa-table"></i>
+        <p style="font-size: 18px; font-weight: 600; color: #1d3557; margin-bottom: 20px;">Detailed Analysis</p>
+
+        <!-- OVERALL -->
+        <div class="analysis-card">
+
+            <div class="analysis-title blue">
+                <i class="fa-solid fa-circle-info"></i>
+                <h4>Overall Consumption Pattern</h4>
             </div>
 
-            <!-- Text Content -->
-            <div class="header-content">
-                <h3>Detailed Consumption Data</h3>
-                <p>Complete breakdown of energy usage by day, room, and appliance</p>
-            </div>
+            <p id="overallAnalysis"></p>
 
         </div>
+
+        <!-- HIGH IMPACT -->
+        <div class="analysis-card">
+
+            <div class="analysis-title orange">
+                <i class="fa-solid fa-chart-line"></i>
+                <h4>High Impact Appliances</h4>
+            </div>
+
+            <p id="highImpactAnalysis"></p>
+
+        </div>
+
+        <!-- AREAS OF CONCERN -->
+        <div class="analysis-card">
+
+            <div class="analysis-title red">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h4>Areas of Concern</h4>
+            </div>
+
+            <p id="concernAnalysis"></p>
+
+        </div>
+
+        <hr>
+
+        <!-- RECOMMENDATIONS -->
+        <div class="recommendation-section">
+
+            <div class="analysis-title yellow">
+                <i class="fa-solid fa-lightbulb"></i>
+                <h4>Recommendations & Suggestions</h4>
+            </div>
+
+            <ul id="recommendationList"></ul>
+
+        </div>
+
+        <!-- ENVIRONMENTAL IMPACT -->
+        <div class="impact-box">
+
+            <strong>Environmental Impact:</strong>
+
+            <span id="impactText"></span>
+
+        </div>
+
     </div>
-</div>
+
+</section>
         <!-- TABLE -->
 
         <div class="table-container">

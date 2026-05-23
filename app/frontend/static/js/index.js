@@ -299,60 +299,692 @@ window.onload = function () {
             currentPage === totalPages;
     }
 
-    // =========================================
-    // RENDER ALERTS
-    // =========================================
+// =========================================
+// SMART ALERT SYSTEM
+// SHORT + DYNAMIC ALERTS
+// =========================================
 
-    function renderAlerts(filtered) {
+function renderAlerts(filtered) {
 
-        let alertBox =
-            document.getElementById("alertsList");
+    const alertBox =
+        document.getElementById("alertsList");
+
+    let alerts = [];
+
+    // =====================================
+    // APPLIANCE RULES
+    // =====================================
+
+    const applianceRules = {
+
+        "router": {
+            maxHours: 24,
+            highEnergy: 0.5,
+            smartDevice: true
+        },
+
+        "refrigirator": {
+            maxHours: 24,
+            highEnergy: 2,
+            smartDevice: true,
+            cyclingDevice: true
+        },
+
+        "water filter": {
+            maxHours: 24,
+            highEnergy: 0.4,
+            smartDevice: true,
+            cyclingDevice: true
+        },
+
+        "gyser": {
+            maxHours: 1,
+            highEnergy: 2,
+            thermostatDevice: true,
+            highWattage: true
+        },
+
+        "AC": {
+            maxHours: 8,
+            highEnergy: 8,
+            highWattage: true
+        },
+
+        "lights": {
+            maxHours: 8,
+            highEnergy: 0.5
+        },
+
+        "fan": {
+            maxHours: 12,
+            highEnergy: 0.6
+        },
+
+        "TV": {
+            maxHours: 6,
+            highEnergy: 1
+        },
+
+        "computer": {
+            maxHours: 8,
+            highEnergy: 1.5
+        }
+    };
+
+    // =====================================
+    // GENERATE ALERTS
+    // =====================================
+
+    filtered.forEach(item => {
+
+        let room =
+            item["Room"];
+
+        let appliance =
+            item["Appliance"];
+
+        let energy =
+            Number(item["Energy Consumption in units"]);
+
+        let hours =
+            Number(item["Utilization Hours"]);
+
+        let wattage =
+            Number(item["Wattage"]);
+
+        let co2 =
+            Number(item["CO2 emissions in kg"]);
+
+        let rule =
+            applianceRules[appliance];
+
+        if (!rule) return;
+
+        // ---------------------------------
+        // HIGH ENERGY
+        // ---------------------------------
+
+        if (energy > rule.highEnergy) {
+
+            alerts.push({
+                type: "danger",
+                icon: "⚡",
+                text:
+                    appliance +
+                    " in " +
+                    room +
+                    " using high energy"
+            });
+        }
+
+        // ---------------------------------
+        // OVER USE
+        // ---------------------------------
+
+        if (
+            !rule.smartDevice &&
+            hours > rule.maxHours
+        ) {
+
+            alerts.push({
+                type: "warning",
+                icon: "⏳",
+                text:
+                    appliance +
+                    " in " +
+                    room +
+                    " exceeded usage limit"
+            });
+        }
+
+        // ---------------------------------
+        // HIGH WATTAGE
+        // ---------------------------------
+
+        if (
+            rule.highWattage &&
+            wattage >= 1500 &&
+            hours > 1
+        ) {
+
+            alerts.push({
+                type: "warning",
+                icon: "🔥",
+                text:
+                    appliance +
+                    " in " +
+                    room +
+                    " running for long hours"
+            });
+        }
+
+        // ---------------------------------
+        // HIGH CO2
+        // ---------------------------------
+
+        if (co2 >= 1) {
+
+            alerts.push({
+                type: "info",
+                icon: "🌍",
+                text:
+                    room +
+                    " carbon emission increased"
+            });
+        }
+
+    });
+
+    // =====================================
+    // NO ALERTS
+    // =====================================
+
+    if (alerts.length === 0) {
+
+        alertBox.innerHTML =
+
+            `
+            <div class="alert success">
+                <span>✅ No major energy concerns</span>
+            </div>
+            `;
+
+        return;
+    }
+
+    // =====================================
+    // ALERT LOOP SYSTEM
+    // =====================================
+
+    let currentIndex = 0;
+
+    function showAlerts() {
 
         alertBox.innerHTML = "";
 
-        filtered.forEach(item => {
+        // show only 3 alerts at once
 
-            let energy =
-                Number(item["Energy Consumption in units"]);
+        for (let i = 0; i < 3; i++) {
 
-            let hours =
-                Number(item["Utilization Hours"]);
+            let index =
+                (currentIndex + i) % alerts.length;
 
-            // HIGH ENERGY ALERT
+            let alert =
+                alerts[index];
 
-            if (energy > 1.5) {
+            let div =
+                document.createElement("div");
 
-                let li =
-                    document.createElement("li");
+            div.className =
+                "alert " + alert.type;
 
-                li.textContent =
-                    "⚠ High energy usage in " +
-                    item["Room"];
+            div.innerHTML =
 
-                alertBox.appendChild(li);
-            }
+                `
+                <div class="alert-left">
 
-            // OVERUSE ALERT
+                    <span class="alert-icon">
+                        ${alert.icon}
+                    </span>
 
-            if (hours > 10) {
+                    <div>
+                        <div class="alert-text">
+                            ${alert.text}
+                        </div>
 
-                let li =
-                    document.createElement("li");
+                        <div class="alert-time">
+                            just now
+                        </div>
+                    </div>
 
-                li.textContent =
-                    "⚠ Overuse of " +
-                    item["Appliance"];
+                </div>
 
-                alertBox.appendChild(li);
-            }
-        });
+                <button class="close-btn">
+                    ×
+                </button>
+                `;
 
-        if (alertBox.children.length === 0) {
+            // CLOSE BUTTON
 
-            alertBox.innerHTML =
-                "<li>No alerts</li>";
+            div
+            .querySelector(".close-btn")
+            .addEventListener("click", () => {
+
+                div.remove();
+
+            });
+
+            alertBox.appendChild(div);
         }
+
+        currentIndex++;
+
     }
+
+    // INITIAL LOAD
+
+    showAlerts();
+
+    // LOOP ALERTS EVERY 5 SECONDS
+
+    setInterval(showAlerts, 5000);
+}
+
+    
+    
+// =========================================
+// GENERATE SMART DETAILED ANALYSIS
+// Appliance Aware Analysis System
+// =========================================
+
+function generateDetailedAnalysis(data) {
+
+    // =====================================
+    // TOTALS
+    // =====================================
+
+    let totalEnergy = 0;
+
+    let totalCO2 = 0;
+
+    let applianceEnergy = {};
+
+    let roomEnergy = {};
+
+    let applianceHours = {};
+
+    let inefficientAppliances = [];
+
+    let highCarbonAppliances = [];
+
+    // =====================================
+    // SMART APPLIANCE RULES
+    // =====================================
+
+    const applianceRules = {
+
+        "router": {
+            alwaysOn: true,
+            efficientHours: 24,
+            efficientEnergy: 0.5
+        },
+
+        "refrigirator": {
+            cycling: true,
+            efficientHours: 24,
+            efficientEnergy: 2
+        },
+
+        "water filter": {
+            cycling: true,
+            efficientHours: 24,
+            efficientEnergy: 0.4
+        },
+
+        "gyser": {
+            thermostat: true,
+            efficientHours: 1,
+            efficientEnergy: 2
+        },
+
+        "AC": {
+            efficientHours: 8,
+            efficientEnergy: 8
+        },
+
+        "fan": {
+            efficientHours: 12,
+            efficientEnergy: 0.6
+        },
+
+        "lights": {
+            efficientHours: 8,
+            efficientEnergy: 0.5
+        },
+
+        "night lights": {
+            efficientHours: 12,
+            efficientEnergy: 0.2
+        },
+
+        "TV": {
+            efficientHours: 6,
+            efficientEnergy: 1
+        },
+
+        "washing machince": {
+            efficientHours: 2,
+            efficientEnergy: 1
+        }
+    };
+
+    // =====================================
+    // PROCESS DATA
+    // =====================================
+
+    data.forEach(item => {
+
+        let energy =
+            Number(item["Energy Consumption in units"]);
+
+        let co2 =
+            Number(item["CO2 emissions in kg"]);
+
+        let appliance =
+            item["Appliance"];
+
+        let room =
+            item["Room"];
+
+        let hours =
+            Number(item["Utilization Hours"]);
+
+        let wattage =
+            Number(item["Wattage"]);
+
+        totalEnergy += energy;
+
+        totalCO2 += co2;
+
+        // ---------------------------------
+        // APPLIANCE ENERGY
+        // ---------------------------------
+
+        applianceEnergy[appliance] =
+            (applianceEnergy[appliance] || 0)
+            + energy;
+
+        // ---------------------------------
+        // ROOM ENERGY
+        // ---------------------------------
+
+        roomEnergy[room] =
+            (roomEnergy[room] || 0)
+            + energy;
+
+        // ---------------------------------
+        // APPLIANCE HOURS
+        // ---------------------------------
+
+        applianceHours[appliance] =
+            (applianceHours[appliance] || 0)
+            + hours;
+
+        // =================================
+        // SMART EFFICIENCY CHECK
+        // =================================
+
+        let rule =
+            applianceRules[appliance];
+
+        if (rule) {
+
+            // Skip smart always-on appliances
+
+            if (!rule.alwaysOn) {
+
+                if (
+                    hours > rule.efficientHours ||
+                    energy > rule.efficientEnergy
+                ) {
+
+                    inefficientAppliances.push(
+                        appliance
+                    );
+                }
+            }
+
+            // High Carbon Emitters
+
+            if (co2 >= 0.8) {
+
+                highCarbonAppliances.push(
+                    appliance
+                );
+            }
+        }
+
+    });
+
+    // =====================================
+    // TOP APPLIANCES
+    // =====================================
+
+    let topAppliances =
+        Object.entries(applianceEnergy)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+    // =====================================
+    // HIGHEST ROOM
+    // =====================================
+
+    let highestRoom =
+        Object.entries(roomEnergy)
+        .sort((a, b) => b[1] - a[1])[0];
+
+    // =====================================
+    // MOST USED APPLIANCE
+    // =====================================
+
+    let mostUsed =
+        Object.entries(applianceHours)
+        .sort((a, b) => b[1] - a[1])[0];
+
+    // =====================================
+    // OVERALL ANALYSIS
+    // =====================================
+
+    document.getElementById("overallAnalysis")
+    .innerHTML =
+
+        `
+        Your household consumed
+        <strong>${totalEnergy.toFixed(2)} kWh</strong>
+        of electricity and generated
+        <strong>${totalCO2.toFixed(2)} kg</strong>
+        of CO₂ emissions.
+
+        The
+        <strong>${highestRoom[0]}</strong>
+        recorded the highest energy consumption
+        at
+        <strong>${highestRoom[1].toFixed(2)} kWh</strong>.
+
+        The most actively used appliance was
+        <strong>${mostUsed[0]}</strong>
+        with approximately
+        <strong>${mostUsed[1].toFixed(1)} hours</strong>
+        of utilization.
+        `;
+
+    // =====================================
+    // HIGH IMPACT APPLIANCES
+    // =====================================
+
+    document.getElementById("highImpactAnalysis")
+    .innerHTML =
+
+        `
+        The top energy consuming appliances are:
+        <strong>
+            ${topAppliances.map(a =>
+                `${a[0]} (${a[1].toFixed(2)} kWh)`
+            ).join(", ")}
+        </strong>.
+
+        These appliances contribute significantly
+        to overall household energy demand and
+        should be prioritized for optimization.
+        `;
+
+    // =====================================
+    // AREAS OF CONCERN
+    // =====================================
+
+    let concernText = "";
+
+    if (inefficientAppliances.length > 0) {
+
+        concernText +=
+
+            `
+            The following appliances showed
+            higher-than-recommended energy
+            behavior:
+            <strong>
+                ${[...new Set(inefficientAppliances)].join(", ")}
+            </strong>.
+            `;
+    }
+
+    if (highCarbonAppliances.length > 0) {
+
+        concernText +=
+
+            `
+            Appliances generating relatively high
+            carbon emissions include:
+            <strong>
+                ${[...new Set(highCarbonAppliances)].join(", ")}
+            </strong>.
+            `;
+    }
+
+    // Smart appliance explanation
+
+    concernText +=
+
+        `
+        Devices such as refrigerators,
+        routers, geysers, and water filters
+        were analyzed using smart appliance
+        rules since they may operate in
+        standby, cyclic, or thermostat-
+        controlled modes rather than drawing
+        continuous full power.
+        `;
+
+    document.getElementById("concernAnalysis")
+    .innerHTML = concernText;
+
+    // =====================================
+    // SMART RECOMMENDATIONS
+    // =====================================
+
+    const recommendations = [];
+
+    // -------------------------------------
+    // AC Recommendation
+    // -------------------------------------
+
+    if (applianceEnergy["AC"] > 0) {
+
+        recommendations.push(
+            "Maintain AC temperature between 24–26°C and clean filters regularly to reduce cooling energy consumption."
+        );
+    }
+
+    // -------------------------------------
+    // Geyser Recommendation
+    // -------------------------------------
+
+    if (applianceEnergy["gyser"] > 0) {
+
+        recommendations.push(
+            "Use geyser timers or thermostat optimization to minimize unnecessary water heating."
+        );
+    }
+
+    // -------------------------------------
+    // Refrigerator Recommendation
+    // -------------------------------------
+
+    if (applianceEnergy["refrigirator"] > 0) {
+
+        recommendations.push(
+            "Avoid frequent refrigerator door opening and ensure proper ventilation around the appliance."
+        );
+    }
+
+    // -------------------------------------
+    // Lighting Recommendation
+    // -------------------------------------
+
+    if (applianceEnergy["lights"] > 0) {
+
+        recommendations.push(
+            "Switch to LED lighting systems and use occupancy-based controls where possible."
+        );
+    }
+
+    // -------------------------------------
+    // Fan Recommendation
+    // -------------------------------------
+
+    if (applianceEnergy["fan"] > 0) {
+
+        recommendations.push(
+            "BLDC ceiling fans can significantly reduce long-duration electricity consumption."
+        );
+    }
+
+    // -------------------------------------
+    // Peak Hour Recommendation
+    // -------------------------------------
+
+    recommendations.push(
+        "Operate high-power appliances during off-peak hours when possible to improve energy efficiency."
+    );
+
+    // =====================================
+    // RENDER RECOMMENDATIONS
+    // =====================================
+
+    const recommendationList =
+        document.getElementById("recommendationList");
+
+    recommendationList.innerHTML = "";
+
+    recommendations.forEach(text => {
+
+        let li =
+            document.createElement("li");
+
+        li.innerHTML = text;
+
+        recommendationList.appendChild(li);
+    });
+
+    // =====================================
+    // ENVIRONMENTAL IMPACT
+    // =====================================
+
+    let reduction =
+        (totalCO2 * 0.22).toFixed(2);
+
+    let trees =
+        Math.max(
+            1,
+            Math.round(reduction / 18)
+        );
+
+    document.getElementById("impactText")
+    .innerHTML =
+
+        `
+        By implementing these smart optimization
+        recommendations, your household could
+        potentially reduce carbon emissions by
+        approximately
+        <strong>${reduction} kg CO₂</strong>.
+
+        This environmental benefit is roughly
+        equivalent to the annual carbon absorption
+        capacity of
+        <strong>${trees} tree(s)</strong>.
+        `;
+}
 
     // =========================================
     // UPDATE VIEW
@@ -451,6 +1083,11 @@ window.onload = function () {
             populateDays(fullData);
 
             updateView("all");
+            
+            let filteredData = data;
+
+            generateDetailedAnalysis(filteredData);
+
 
             // =========================================
             // DAY SELECTOR

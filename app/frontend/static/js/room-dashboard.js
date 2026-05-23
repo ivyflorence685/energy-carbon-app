@@ -1,155 +1,450 @@
 // =========================================
-// ROOM FROM URL
+// GET ROOM NAME FROM URL
+// Example:
+// room-dashboard.html?room=kitchen
 // =========================================
 
-const params =
-new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
 
-const room =
-params.get("room");
-
-console.log(room);
-
+const roomParam = params.get("room");
 
 // =========================================
-// ROOM DISPLAY NAMES
+// ROOM NAME MAPPING
 // =========================================
 
-const roomDisplayNames = {
+const roomMap = {
+
+    "living-room": "Living room",
+
+    "kitchen": "Kitchen",
+
+    "bedroom-1": "Bedroom-1",
+
+    "bedroom-2": "Bedroom-2",
+
+    "bathroom-1": "Bathroom-1",
+
+    "bathroom-2": "Bathroom-2",
+
+    "study-room": "Computer room",
+
+    "dining-room": "Dining room"
+};
+
+// =========================================
+// DISPLAY TITLE MAPPING
+// =========================================
+
+const displayMap = {
 
     "living-room": "Living Room",
 
     "kitchen": "Kitchen",
 
-    "bedroom": "Bedroom",
+    "bedroom-1": "Bedroom 1",
 
-    "bathroom": "Bathroom",
+    "bedroom-2": "Bedroom 2",
+
+    "bathroom-1": "Bathroom 1",
+
+    "bathroom-2": "Bathroom 2",
 
     "study-room": "Study Room",
 
     "dining-room": "Dining Room"
 };
 
-
 // =========================================
-// DISPLAY NAME
+// CURRENT ROOM
 // =========================================
 
-// Try localStorage label first
-
-const selectedRoomLabel =
-localStorage.getItem("selectedRoomLabel");
-
-
-// Use:
-// 1. stored label
-// 2. mapped display name
-// 3. fallback raw room
+const roomName =
+    roomMap[roomParam] || "Living room";
 
 const displayName =
-
-    selectedRoomLabel ||
-
-    roomDisplayNames[room] ||
-
-    room;
-
+    displayMap[roomParam] || "Living Room";
 
 // =========================================
-// SET TITLE
+// UPDATE TITLE
 // =========================================
 
-document
-.getElementById("roomTitle")
-.innerText =
+document.getElementById("roomTitle").innerText =
+    displayName + " Analysis";
 
-displayName + " Analysis";
+let lineChart;
+let barChart;
 
-    // ======================================
-    // BACK BUTTON
-    // ======================================
+// =========================================
+// FETCH DATA
+// =========================================
 
-    function goBack(){
+fetch("/data")
 
-      window.location.href = "/";
-    }
+.then(res => res.json())
 
-    // ======================================
-    // LOAD SMART METER DATA
-    // ======================================
+.then(fullData => {
 
-    async function loadMeterData(){
+    // =========================================
+   // NORMALIZE ROOM NAMES
+   // =========================================
 
-      const response =
-      await fetch("/meter-data");
+function normalizeRoom(room) {
 
-      const data =
-      await response.json();
+    return room
+        .toLowerCase()
+        .replace(/-/g, "")
+        .replace(/_/g, "")
+        .replace(/\s+/g, "")
+        .trim();
+}
 
-      document.getElementById("power")
-      .innerText =
-      data.power_watts + " W";
+// =========================================
+// FILTER ROOM DATA
+// =========================================
 
-      document.getElementById("voltage")
-      .innerText =
-      data.voltage + " V";
+const data = fullData.filter(item =>
 
-      document.getElementById("current")
-      .innerText =
-      data.current + " A";
+    normalizeRoom(item.Room) ===
+    normalizeRoom(roomName)
+);
 
-      document.getElementById("pf")
-      .innerText =
-      data.power_factor;
+    // =========================================
+    // TOTALS
+    // =========================================
 
-      document.getElementById("energy")
-      .innerText =
-      data.daily_energy_kwh + " kWh";
+    const totalEnergy = data.reduce((sum, item) =>
 
-      document.getElementById("carbon")
-      .innerText =
-      data.carbon_kg + " kg";
-    }
+        sum + parseFloat(item["Energy Consumption in units"] || 0)
 
-    loadMeterData();
+    , 0);
 
-    setInterval(loadMeterData, 3000);
-  
-    
-   // ======================================
-    // LINE CHART
-    // ======================================
-    
+    const totalCarbon = data.reduce((sum, item) =>
 
-    // ======================================
-    // BAR CHART
-    // ======================================
+        sum + parseFloat(item["CO2 emissions in kg"] || 0)
 
-    new Chart(
-      document.getElementById("barChart"),
-    {
-      type:"bar",
+    , 0);
 
-      data:{
+    const avgDailyEnergy = totalEnergy / 7;
 
-        labels:[
-          "AC",
-          "TV",
-          "Fan",
-          "Light"
-        ],
+    const peakUsage = Math.max(
 
-        datasets:[
-          {
-            label:"Consumption",
+        ...data.map(item =>
 
-            data:[
-              165,
-              20,
-              15,
-              10
-            ]
-          }
-        ]
-      }
+            parseFloat(item["Energy Consumption in units"] || 0)
+        )
+    );
+
+    // =========================================
+    // UPDATE STATS
+    // =========================================
+
+    document.getElementById("totalEnergy").innerText =
+        totalEnergy.toFixed(2) + " kWh";
+
+    document.getElementById("totalCarbon").innerText =
+        totalCarbon.toFixed(2) + " kg";
+
+    document.getElementById("dailyAverage").innerText =
+        avgDailyEnergy.toFixed(2) + " kWh";
+
+    document.getElementById("peakUsage").innerText =
+        peakUsage.toFixed(2) + " kWh";
+
+    // =========================================
+    // DAILY DATA
+    // =========================================
+
+    const dailyMap = {};
+
+    data.forEach(item => {
+
+        const day = item.day;
+
+        const energy =
+            parseFloat(item["Energy Consumption in units"] || 0);
+
+        const carbon =
+            parseFloat(item["CO2 emissions in kg"] || 0);
+
+        if (!dailyMap[day]) {
+
+            dailyMap[day] = {
+                energy: 0,
+                carbon: 0
+            };
+        }
+
+        dailyMap[day].energy += energy;
+
+        dailyMap[day].carbon += carbon;
     });
+
+    const labels = Object.keys(dailyMap);
+
+    const energyData = labels.map(day =>
+        dailyMap[day].energy.toFixed(2)
+    );
+
+    const carbonData = labels.map(day =>
+        dailyMap[day].carbon.toFixed(2)
+    );
+
+    // =========================================
+    // LINE CHART
+    // =========================================
+
+    if (lineChart) {
+        lineChart.destroy();
+    }
+
+    lineChart = new Chart(
+
+        document.getElementById("lineChart"),
+
+        {
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+                        label: "Energy (kWh)",
+                        data: energyData,
+                        borderColor: "#2563eb",
+                        fill: false,
+                        tension: 0.4
+                    },
+
+                    {
+                        label: "CO₂ (kg)",
+                        data: carbonData,
+                        borderColor: "#10b981",
+                        fill: false,
+                        tension: 0.4
+                    }
+                ]
+            }
+        }
+    );
+
+    // =========================================
+    // APPLIANCE DATA
+    // =========================================
+
+    const applianceMap = {};
+
+    data.forEach(item => {
+
+        const appliance = item.Appliance;
+
+        const energy =
+            parseFloat(item["Energy Consumption in units"] || 0);
+
+        if (!applianceMap[appliance]) {
+            applianceMap[appliance] = 0;
+        }
+
+        applianceMap[appliance] += energy;
+    });
+
+    const applianceLabels = Object.keys(applianceMap);
+
+    const applianceEnergy = applianceLabels.map(appliance =>
+        applianceMap[appliance].toFixed(2)
+    );
+
+    // =========================================
+    // BAR CHART
+    // =========================================
+
+    if (barChart) {
+        barChart.destroy();
+    }
+
+    barChart = new Chart(
+
+        document.getElementById("barChart"),
+
+        {
+            type: "bar",
+
+            data: {
+
+                labels: applianceLabels,
+
+                datasets: [
+
+                    {
+                        label: "Energy Consumption",
+                        data: applianceEnergy,
+                        backgroundColor: "#10b981"
+                    }
+                ]
+            }
+        }
+    );
+
+    // =========================================
+    // TOP APPLIANCE
+    // =========================================
+
+    const topAppliance = applianceLabels[
+        applianceEnergy.indexOf(
+            Math.max(...applianceEnergy)
+        )
+    ];
+
+    // =========================================
+    // INSIGHTS
+    // =========================================
+
+    document.getElementById("insightText").innerHTML = `
+
+        The <b>${displayName}</b> consumed
+        <b>${totalEnergy.toFixed(2)} kWh</b>
+        this week generating
+        <b>${totalCarbon.toFixed(2)} kg CO₂</b>.
+
+        <br><br>
+
+        Top energy consumer:
+        <b>${topAppliance}</b>
+
+        <br><br>
+
+        Consider reducing appliance usage
+        during peak hours for better
+        energy optimization.
+    `;
+
+    // =========================================
+    // TABLE
+    // =========================================
+
+    let tableHTML = "";
+
+    data.forEach(item => {
+
+        tableHTML += `
+
+            <tr>
+
+                <td>${item.day}</td>
+
+                <td>${item.date}</td>
+
+                <td>${item.Appliance}</td>
+
+                <td>${item["Total number of appliance"]}</td>
+
+                <td>${item["Number of appliance in use"]}</td>
+
+                <td>${item.Wattage} W</td>
+
+                <td>${item["Utilization Hours"]}</td>
+
+                <td>${item["Energy Consumption in units"]}</td>
+
+                <td>${item["CO2 emissions in kg"]}</td>
+
+            </tr>
+        `;
+    });
+
+    document.getElementById("tableBody").innerHTML =
+        tableHTML;
+});
+
+// =====================================
+// SMART METER SIMULATION
+// =====================================
+
+function updateSmartMeter() {
+
+    // RANDOM POWER DRAW
+
+    const power =
+        Math.floor(Math.random() * 400) + 300;
+
+    // VOLTAGE
+
+    const voltage =
+        (220 + Math.random() * 5).toFixed(1);
+
+    // CURRENT
+
+    const current =
+        (power / voltage).toFixed(2);
+
+    // POWER FACTOR
+
+    const powerFactor =
+        (0.80 + Math.random() * 0.19).toFixed(2);
+
+    // DAILY ENERGY
+
+    const energy =
+        (Math.random() * 8).toFixed(2);
+
+    // CO2
+
+    const co2 =
+        (energy * 0.82).toFixed(2);
+
+    // CAPACITY %
+
+    const percentage =
+        ((power / 700) * 100).toFixed(1);
+
+    // =====================================
+    // UPDATE UI
+    // =====================================
+
+    document.getElementById("powerDraw")
+        .innerText = power;
+
+    document.getElementById("voltage")
+        .innerText = voltage;
+
+    document.getElementById("current")
+        .innerText = current;
+
+    document.getElementById("powerFactor")
+        .innerText = powerFactor;
+
+    document.getElementById("todayEnergy")
+        .innerText = energy + " kWh";
+
+    document.getElementById("todayCO2")
+        .innerText = co2 + " kg";
+
+    document.getElementById("capacityText")
+        .innerText =
+        percentage + "% of maximum capacity";
+
+    document.getElementById("progressFill")
+        .style.width = percentage + "%";
+
+    document.getElementById("lastUpdate")
+        .innerText =
+        new Date().toLocaleTimeString();
+}
+
+// =====================================
+// INITIAL CALL
+// =====================================
+
+updateSmartMeter();
+
+// =====================================
+// UPDATE EVERY 2 SECONDS
+// =====================================
+
+setInterval(updateSmartMeter, 2000);
+
+function goBack() {
+    window.history.back();
+}
