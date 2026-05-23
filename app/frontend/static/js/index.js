@@ -567,7 +567,7 @@ function renderAlerts(filtered) {
 
     // LOOP ALERTS EVERY 5 SECONDS
 
-    setInterval(showAlerts, 5000);
+    setInterval(showAlerts, 1200000);
 }
 
     

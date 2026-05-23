@@ -187,7 +187,63 @@ a{
     gap: 20px;
     align-items: center;
     margin-bottom: 20px;
+    background:#f5f7fb;
+    padding:12px 16px;
+    border-radius:14px;
+    width:fit-content;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
+
+/* Dropdown */
+#daySelector{
+    height:32px;
+    border:2px solid #ff9800;
+    border-radius:10px;
+    padding:0 12px;
+    font-size:16px;
+    background:white;
+    outline:none;
+    cursor:pointer;
+}
+
+/* Slider */
+#daySlider{
+    appearance:none;
+    width:180px;
+    height:32px;
+    margin:0;
+    background:white;
+    border-radius:10px;
+    padding:0 10px;
+    cursor:pointer;
+}
+
+/* Slider Track */
+#daySlider::-webkit-slider-runnable-track{
+    height:6px;
+    background:#d0d7e2;
+    border-radius:10px;
+}
+
+/* Slider Thumb */
+#daySlider::-webkit-slider-thumb{
+    appearance:none;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#1e88e5;
+    margin-top:-6px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Day Text */
+#sliderValue{
+    margin-left:16px;
+    font-size:16px;
+    font-weight:500;
+    color:#222;
+}
+
 
 /* CHARTS */
 .charts {
