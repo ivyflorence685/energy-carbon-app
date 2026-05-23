@@ -45,22 +45,22 @@
 
     <div class="stat-card">
       <h3>Total Energy</h3>
-      <h2>213.35 kWh</h2>
+      <h2><span id="totalEnergy-room"></span> kWh</h2>
     </div>
 
     <div class="stat-card">
       <h3>Carbon Emission</h3>
-      <h2>174.98 kg</h2>
+      <h2><span id="carbonEmission-room"></span> kg</h2>
     </div>
 
     <div class="stat-card">
       <h3>Daily Average</h3>
-      <h2>30.48 kWh</h2>
+      <h2><span id="dailyAverage-room"></span> kWh</h2>
     </div>
 
     <div class="stat-card">
       <h3>Peak Usage</h3>
-      <h2>45.00 kWh</h2>
+      <h2><span id="peakUsage-room"></span> kWh</h2>
     </div>
 
   </div>
@@ -149,190 +149,7 @@
 
   </div>
 
-    <script>
-
-
-   // =========================================
-// ROOM FROM URL
-// =========================================
-
-const params =
-new URLSearchParams(window.location.search);
-
-const room =
-params.get("room");
-
-console.log(room);
-
-
-// =========================================
-// ROOM DISPLAY NAMES
-// =========================================
-
-const roomDisplayNames = {
-
-    "living-room": "Living Room",
-
-    "kitchen": "Kitchen",
-
-    "bedroom": "Bedroom",
-
-    "bathroom": "Bathroom",
-
-    "study-room": "Study Room",
-
-    "dining-room": "Dining Room"
-};
-
-
-// =========================================
-// DISPLAY NAME
-// =========================================
-
-// Try localStorage label first
-
-const selectedRoomLabel =
-localStorage.getItem("selectedRoomLabel");
-
-
-// Use:
-// 1. stored label
-// 2. mapped display name
-// 3. fallback raw room
-
-const displayName =
-
-    selectedRoomLabel ||
-
-    roomDisplayNames[room] ||
-
-    room;
-
-
-// =========================================
-// SET TITLE
-// =========================================
-
-document
-.getElementById("roomTitle")
-.innerText =
-
-displayName + " Analysis";
-
-    // ======================================
-    // BACK BUTTON
-    // ======================================
-
-    function goBack(){
-
-      window.location.href = "/";
-    }
-
-    // ======================================
-    // LOAD SMART METER DATA
-    // ======================================
-
-    async function loadMeterData(){
-
-      const response =
-      await fetch("/meter-data");
-
-      const data =
-      await response.json();
-
-      document.getElementById("power")
-      .innerText =
-      data.power_watts + " W";
-
-      document.getElementById("voltage")
-      .innerText =
-      data.voltage + " V";
-
-      document.getElementById("current")
-      .innerText =
-      data.current + " A";
-
-      document.getElementById("pf")
-      .innerText =
-      data.power_factor;
-
-      document.getElementById("energy")
-      .innerText =
-      data.daily_energy_kwh + " kWh";
-
-      document.getElementById("carbon")
-      .innerText =
-      data.carbon_kg + " kg";
-    }
-
-    loadMeterData();
-
-    setInterval(loadMeterData, 3000);
-
-    // ======================================
-    // LINE CHART
-    // ======================================
-
-    new Chart(
-      document.getElementById("lineChart"),
-    {
-      type:"line",
-
-      data:{
-
-        labels:[
-          "Mon","Tue","Wed",
-          "Thu","Fri","Sat","Sun"
-        ],
-
-        datasets:[
-          {
-            label:"Energy",
-
-            data:[
-              10,40,55,36,20,28,29
-            ],
-
-            tension:0.4
-          }
-        ]
-      }
-    });
-
-    // ======================================
-    // BAR CHART
-    // ======================================
-
-    new Chart(
-      document.getElementById("barChart"),
-    {
-      type:"bar",
-
-      data:{
-
-        labels:[
-          "AC",
-          "TV",
-          "Fan",
-          "Light"
-        ],
-
-        datasets:[
-          {
-            label:"Consumption",
-
-            data:[
-              165,
-              20,
-              15,
-              10
-            ]
-          }
-        ]
-      }
-    });
-
-  </script>
+  <script src="{{ url_for('static', filename='js/room-dashboard.js') }}"></script>
 
 </body>
 </html>
