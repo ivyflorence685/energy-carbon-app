@@ -17,19 +17,77 @@
 <div class="dashboard">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div  class="logo">🌿 EcoTrack</div>
+    <!-- FONT AWESOME -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
-        <nav>
-            <a href="#Main">🏠 Overview</a>
-            <a href="#Alerts">🚨 Alerts</a>
-            <a href="#Rooms">🏠 Rooms</a>
-            <a href="#chartsSection">📊 Charts</a>
-            <a href="#detailedAnalysis">📈 Analysis</a>
-            <a href="#Data">📋 Data</a>
-        </nav>
-    </aside>
+<aside class="sidebar">
 
+    <!-- LOGO -->
+    <div class="sidebar-header">
+
+        <div class="logo-icon">
+            <i class="fa-solid fa-chart-column"></i>
+        </div>
+
+        <div>
+            <h2 class="logo-title">EcoTrack</h2>
+            <p class="logo-subtitle">Carbon Monitor</p>
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav>
+
+        <a href="#Main" class="active">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Overview</span>
+        </a>
+
+        <a href="#Alerts">
+            <i class="fa-regular fa-bell"></i>
+            <span>Alerts & Notifications</span>
+        </a>
+
+        <a href="#Rooms">
+            <i class="fa-solid fa-house"></i>
+            <span>Room-wise Analysis</span>
+        </a>
+
+        <a href="#chartsSection">
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Charts & Trends</span>
+        </a>
+
+        <a href="#detailedAnalysis">
+            <i class="fa-regular fa-lightbulb"></i>
+            <span>Detailed Analysis</span>
+        </a>
+
+        <a href="#Data">
+            <i class="fa-regular fa-table-columns"></i>
+            <span>Data Table</span>
+        </a>
+
+    </nav>
+
+    <!-- FOOTER CARD -->
+    <div class="goal-card">
+
+        <p class="goal-title">
+            Weekly Reduction Goal
+        </p>
+
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+
+        <p class="goal-text">65% Complete</p>
+
+    </div>
+
+</aside>
     <!-- MAIN -->
     <main id = "Main" class="main">
 
@@ -67,9 +125,8 @@
                 <p><span id="peakUsage"></span> kWh</p>
             </div>
         </section>
-
         <!-- ALERT -->
-         <div class="box-header">
+         <div id="Alerts" class="box-header">
             <div class="container">
                 <div class="flex-wrapper">
                     <div class="icon-box"><i class="fa-regular fa-bell" style="color: rgb(255, 255, 255);"></i></div>
@@ -79,14 +136,14 @@
                 </div>
             </div>
         </div>
-        <section id = "Alerts" class="alerts">
+        <section class="alerts">
             <div class="sub-header">
                <p><i class="fa-regular fa-bell" style="color: rgb(0, 0, 0);"></i> Active Alerts & Notifications</p>
             </div>
         <div class="alerts-list" id="alertsList"></div>
         </section>
         <!--ROOM-WISE ANALYSIS HEADER-->
-        <div class="box-header">
+        <div id="Rooms" class="box-header">
            <div class="container">
              <div class="flex-wrapper">
 
@@ -105,7 +162,7 @@
     </div>
 </div>
         <!-- FLEX -->
-         <section id="Rooms" class="room-wise" >
+         <section  class="room-wise" >
          <div class ="room-cards-header">
             <p>Room-wise Analysis</p>
           </div>
@@ -348,7 +405,7 @@
   <div class="overlay"></div>
 
   <button
-  class="close-btn"
+  class="close-btn1"
   onclick="goToDashboard()"
 >
   ✕
@@ -356,11 +413,8 @@
 
   <div class="category-info">
 
-    <div
-      class="icon-box"
-      id="modalIcon"
-    >
-      🏠
+    <div id="modalIcon" class="icon-box">
+
     </div>
 
     <div>

@@ -1,14 +1,10 @@
 window.onload = function () {
 
-    // =========================================
-    // STORAGE KEY
-    // =========================================
+ 
 
     const STORAGE_KEY = "ecotrack-rooms-v1";
 
-    // =========================================
-    // DEFAULT ROOMS
-    // =========================================
+
 
     const DEFAULT_ROOMS = {
 
@@ -43,53 +39,54 @@ window.onload = function () {
         }]
     };
 
-    // =========================================
-    // ROOM CONFIG
-    // =========================================
+const ROOM_CONFIG = {
 
-    const ROOM_CONFIG = {
+    "living-room": {
+        title: "Living Room",
+        image: "/static/images/living.jpg",
+        icon: "fa-couch",
+        theme: "living-theme"
+    },
 
-        "living-room": {
-            title: "Living Room",
-            image: "/static/images/living.jpg",
-            icon: "🏠"
-        },
+    "kitchen": {
+        title: "Kitchen",
+        image: "/static/images/kitchen.jpg",
+        icon: "fa-kitchen-set",
+        theme: "kitchen-theme"
+    },
 
-        "kitchen": {
-            title: "Kitchen",
-            image: "/static/images/kitchen.jpg",
-            icon: "🍴"
-        },
+    "bedroom": {
+        title: "Bedroom",
+        image: "/static/images/bedroom.jpg",
+        icon: "fa-bed",
+        theme: "bedroom-theme"
+    },
 
-        "bedroom": {
-            title: "Bedroom",
-            image: "/static/images/bedroom.jpg",
-            icon: "🛏"
-        },
+    "bathroom": {
+        title: "Bathroom",
+        image: "/static/images/bathroom.jpg",
+        icon: "fa-bath",
+        theme: "bathroom-theme"
+    },
 
-        "bathroom": {
-            title: "Bathroom",
-            image: "/static/images/bathroom.jpg",
-            icon: "🚿"
-        },
+    "study-room": {
+        title: "Study Room",
+        image: "/static/images/study.jpg",
+        icon: "fa-book",
+        theme: "study-theme"
+    },
 
-        "study-room": {
-            title: "Study Room",
-            image: "/static/images/study.jpg",
-            icon: "📚"
-        },
+    "dining-room": {
+        title: "Dining Room",
+        image: "/static/images/dining.jpg",
+        icon: "fa-utensils",
+        theme: "dining-theme"
+    }
+};
 
-        "dining-room": {
-            title: "Dining Room",
-            image: "/static/images/dining.jpg",
-            icon: "🍽"
-        }
-    };
 
-    // =========================================
-    // GLOBAL VARIABLES
-    // =========================================
 
+    //global variables
     let fullData = [];
 
     let energyChart;
@@ -105,9 +102,6 @@ window.onload = function () {
 
     let rooms = [];
 
-    // =========================================
-    // INITIALIZE ROOM STORAGE
-    // =========================================
 
     function initializeRoomStorage() {
 
@@ -124,18 +118,12 @@ window.onload = function () {
 
     initializeRoomStorage();
 
-    // =========================================
-    // NORMALIZE DAY
-    // =========================================
 
     function normalizeDay(day) {
 
         return day.toLowerCase().replace("_", " ");
     }
 
-    // =========================================
-    // FILTER BY DAY
-    // =========================================
 
     function filterByDay(data, selectedDay) {
 
@@ -146,9 +134,6 @@ window.onload = function () {
         );
     }
 
-    // =========================================
-    // AGGREGATE APPLIANCE
-    // =========================================
 
     function aggregateAppliance(data) {
 
@@ -179,9 +164,6 @@ window.onload = function () {
         return map;
     }
 
-    // =========================================
-    // RENDER CHARTS
-    // =========================================
 
     function renderCharts(filtered) {
 
@@ -232,9 +214,6 @@ window.onload = function () {
     }
     
     
-    // =========================================
-    // RENDER TABLE
-    // =========================================
 
     function renderTables(filtered) {
 
@@ -292,18 +271,12 @@ window.onload = function () {
         let nextButton =
             document.getElementById("nextBtn");
 
-        prevButton.disabled =
-            currentPage === 1;
+        prevButton.disabled = currentPage === 1;
 
-        nextButton.disabled =
-            currentPage === totalPages;
+        nextButton.disabled = currentPage === totalPages;
     }
 
-// =========================================
-// SMART ALERT SYSTEM
-// SHORT + DYNAMIC ALERTS
-// =========================================
-
+//Smart alert system
 function renderAlerts(filtered) {
 
     const alertBox =
@@ -311,9 +284,6 @@ function renderAlerts(filtered) {
 
     let alerts = [];
 
-    // =====================================
-    // APPLIANCE RULES
-    // =====================================
 
     const applianceRules = {
 
@@ -371,10 +341,7 @@ function renderAlerts(filtered) {
         }
     };
 
-    // =====================================
-    // GENERATE ALERTS
-    // =====================================
-
+    //generate alerts
     filtered.forEach(item => {
 
         let room =
@@ -400,10 +367,6 @@ function renderAlerts(filtered) {
 
         if (!rule) return;
 
-        // ---------------------------------
-        // HIGH ENERGY
-        // ---------------------------------
-
         if (energy > rule.highEnergy) {
 
             alerts.push({
@@ -417,14 +380,8 @@ function renderAlerts(filtered) {
             });
         }
 
-        // ---------------------------------
-        // OVER USE
-        // ---------------------------------
 
-        if (
-            !rule.smartDevice &&
-            hours > rule.maxHours
-        ) {
+        if (!rule.smartDevice && hours > rule.maxHours) {
 
             alerts.push({
                 type: "warning",
@@ -437,15 +394,7 @@ function renderAlerts(filtered) {
             });
         }
 
-        // ---------------------------------
-        // HIGH WATTAGE
-        // ---------------------------------
-
-        if (
-            rule.highWattage &&
-            wattage >= 1500 &&
-            hours > 1
-        ) {
+        if (rule.highWattage && wattage >= 1500 && hours > 1) {
 
             alerts.push({
                 type: "warning",
@@ -457,10 +406,6 @@ function renderAlerts(filtered) {
                     " running for long hours"
             });
         }
-
-        // ---------------------------------
-        // HIGH CO2
-        // ---------------------------------
 
         if (co2 >= 1) {
 
@@ -475,10 +420,6 @@ function renderAlerts(filtered) {
 
     });
 
-    // =====================================
-    // NO ALERTS
-    // =====================================
-
     if (alerts.length === 0) {
 
         alertBox.innerHTML =
@@ -492,9 +433,6 @@ function renderAlerts(filtered) {
         return;
     }
 
-    // =====================================
-    // ALERT LOOP SYSTEM
-    // =====================================
 
     let currentIndex = 0;
 
@@ -503,7 +441,6 @@ function renderAlerts(filtered) {
         alertBox.innerHTML = "";
 
         // show only 3 alerts at once
-
         for (let i = 0; i < 3; i++) {
 
             let index =
@@ -515,8 +452,7 @@ function renderAlerts(filtered) {
             let div =
                 document.createElement("div");
 
-            div.className =
-                "alert " + alert.type;
+            div.className = "alert " + alert.type;
 
             div.innerHTML =
 
@@ -536,13 +472,14 @@ function renderAlerts(filtered) {
                             just now
                         </div>
                     </div>
+                  
 
                 </div>
-
-                <button class="close-btn">
-                    ×
-                </button>
+                 <button class="close-btn" title="Dismiss">
+                        ×
+                    </button>
                 `;
+                
 
             // CLOSE BUTTON
 
@@ -561,27 +498,18 @@ function renderAlerts(filtered) {
 
     }
 
-    // INITIAL LOAD
 
     showAlerts();
 
-    // LOOP ALERTS EVERY 5 SECONDS
 
-    setInterval(showAlerts, 1200000);
+    setInterval(showAlerts, 10000);
 }
 
     
     
-// =========================================
-// GENERATE SMART DETAILED ANALYSIS
-// Appliance Aware Analysis System
-// =========================================
-
+// detailed analysis
 function generateDetailedAnalysis(data) {
 
-    // =====================================
-    // TOTALS
-    // =====================================
 
     let totalEnergy = 0;
 
@@ -597,9 +525,6 @@ function generateDetailedAnalysis(data) {
 
     let highCarbonAppliances = [];
 
-    // =====================================
-    // SMART APPLIANCE RULES
-    // =====================================
 
     const applianceRules = {
 
@@ -658,9 +583,6 @@ function generateDetailedAnalysis(data) {
         }
     };
 
-    // =====================================
-    // PROCESS DATA
-    // =====================================
 
     data.forEach(item => {
 
@@ -686,41 +608,21 @@ function generateDetailedAnalysis(data) {
 
         totalCO2 += co2;
 
-        // ---------------------------------
-        // APPLIANCE ENERGY
-        // ---------------------------------
 
-        applianceEnergy[appliance] =
-            (applianceEnergy[appliance] || 0)
-            + energy;
+        applianceEnergy[appliance] = (applianceEnergy[appliance] || 0) + energy;
 
-        // ---------------------------------
-        // ROOM ENERGY
-        // ---------------------------------
 
-        roomEnergy[room] =
-            (roomEnergy[room] || 0)
-            + energy;
+        roomEnergy[room] = (roomEnergy[room] || 0) + energy;
 
-        // ---------------------------------
-        // APPLIANCE HOURS
-        // ---------------------------------
 
-        applianceHours[appliance] =
-            (applianceHours[appliance] || 0)
-            + hours;
+        applianceHours[appliance] = (applianceHours[appliance] || 0) + hours;
 
-        // =================================
-        // SMART EFFICIENCY CHECK
-        // =================================
 
-        let rule =
-            applianceRules[appliance];
+        let rule = applianceRules[appliance];
 
         if (rule) {
 
             // Skip smart always-on appliances
-
             if (!rule.alwaysOn) {
 
                 if (
@@ -735,7 +637,6 @@ function generateDetailedAnalysis(data) {
             }
 
             // High Carbon Emitters
-
             if (co2 >= 0.8) {
 
                 highCarbonAppliances.push(
@@ -746,37 +647,17 @@ function generateDetailedAnalysis(data) {
 
     });
 
-    // =====================================
-    // TOP APPLIANCES
-    // =====================================
 
-    let topAppliances =
-        Object.entries(applianceEnergy)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3);
+    let topAppliances = Object.entries(applianceEnergy).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
-    // =====================================
-    // HIGHEST ROOM
-    // =====================================
 
-    let highestRoom =
-        Object.entries(roomEnergy)
-        .sort((a, b) => b[1] - a[1])[0];
+    let highestRoom = Object.entries(roomEnergy).sort((a, b) => b[1] - a[1])[0];
 
-    // =====================================
-    // MOST USED APPLIANCE
-    // =====================================
 
-    let mostUsed =
-        Object.entries(applianceHours)
-        .sort((a, b) => b[1] - a[1])[0];
+    let mostUsed = Object.entries(applianceHours).sort((a, b) => b[1] - a[1])[0];
 
-    // =====================================
-    // OVERALL ANALYSIS
-    // =====================================
 
-    document.getElementById("overallAnalysis")
-    .innerHTML =
+    document.getElementById("overallAnalysis").innerHTML =
 
         `
         Your household consumed
@@ -798,9 +679,6 @@ function generateDetailedAnalysis(data) {
         of utilization.
         `;
 
-    // =====================================
-    // HIGH IMPACT APPLIANCES
-    // =====================================
 
     document.getElementById("highImpactAnalysis")
     .innerHTML =
@@ -818,9 +696,6 @@ function generateDetailedAnalysis(data) {
         should be prioritized for optimization.
         `;
 
-    // =====================================
-    // AREAS OF CONCERN
-    // =====================================
 
     let concernText = "";
 
@@ -852,7 +727,6 @@ function generateDetailedAnalysis(data) {
     }
 
     // Smart appliance explanation
-
     concernText +=
 
         `
@@ -865,18 +739,11 @@ function generateDetailedAnalysis(data) {
         continuous full power.
         `;
 
-    document.getElementById("concernAnalysis")
-    .innerHTML = concernText;
+    document.getElementById("concernAnalysis").innerHTML = concernText;
 
-    // =====================================
-    // SMART RECOMMENDATIONS
-    // =====================================
 
     const recommendations = [];
 
-    // -------------------------------------
-    // AC Recommendation
-    // -------------------------------------
 
     if (applianceEnergy["AC"] > 0) {
 
@@ -885,9 +752,6 @@ function generateDetailedAnalysis(data) {
         );
     }
 
-    // -------------------------------------
-    // Geyser Recommendation
-    // -------------------------------------
 
     if (applianceEnergy["gyser"] > 0) {
 
@@ -896,9 +760,6 @@ function generateDetailedAnalysis(data) {
         );
     }
 
-    // -------------------------------------
-    // Refrigerator Recommendation
-    // -------------------------------------
 
     if (applianceEnergy["refrigirator"] > 0) {
 
@@ -907,9 +768,6 @@ function generateDetailedAnalysis(data) {
         );
     }
 
-    // -------------------------------------
-    // Lighting Recommendation
-    // -------------------------------------
 
     if (applianceEnergy["lights"] > 0) {
 
@@ -918,9 +776,6 @@ function generateDetailedAnalysis(data) {
         );
     }
 
-    // -------------------------------------
-    // Fan Recommendation
-    // -------------------------------------
 
     if (applianceEnergy["fan"] > 0) {
 
@@ -929,20 +784,13 @@ function generateDetailedAnalysis(data) {
         );
     }
 
-    // -------------------------------------
-    // Peak Hour Recommendation
-    // -------------------------------------
 
     recommendations.push(
         "Operate high-power appliances during off-peak hours when possible to improve energy efficiency."
     );
 
-    // =====================================
-    // RENDER RECOMMENDATIONS
-    // =====================================
 
-    const recommendationList =
-        document.getElementById("recommendationList");
+    const recommendationList = document.getElementById("recommendationList");
 
     recommendationList.innerHTML = "";
 
@@ -956,18 +804,10 @@ function generateDetailedAnalysis(data) {
         recommendationList.appendChild(li);
     });
 
-    // =====================================
-    // ENVIRONMENTAL IMPACT
-    // =====================================
 
-    let reduction =
-        (totalCO2 * 0.22).toFixed(2);
+    let reduction = (totalCO2 * 0.22).toFixed(2);
 
-    let trees =
-        Math.max(
-            1,
-            Math.round(reduction / 18)
-        );
+    let trees = Math.max(1, Math.round(reduction / 18));
 
     document.getElementById("impactText")
     .innerHTML =
@@ -986,9 +826,6 @@ function generateDetailedAnalysis(data) {
         `;
 }
 
-    // =========================================
-    // UPDATE VIEW
-    // =========================================
 
     function updateView(selectedDay) {
 
@@ -1004,9 +841,6 @@ function generateDetailedAnalysis(data) {
         renderAlerts(filtered);
     }
 
-    // =========================================
-    // POPULATE DAYS
-    // =========================================
 
     function populateDays(data) {
 
@@ -1034,9 +868,6 @@ function generateDetailedAnalysis(data) {
         });
     }
 
-    // =========================================
-    // PREVIOUS BUTTON
-    // =========================================
 
     document
         .getElementById("prevBtn")
@@ -1050,9 +881,6 @@ function generateDetailedAnalysis(data) {
             }
         });
 
-    // =========================================
-    // NEXT BUTTON
-    // =========================================
 
     document
         .getElementById("nextBtn")
@@ -1069,9 +897,6 @@ function generateDetailedAnalysis(data) {
             }
         });
 
-    // =========================================
-    // FETCH DATA
-    // =========================================
 
     fetch("/data")
         .then(res => res.json())
@@ -1089,9 +914,6 @@ function generateDetailedAnalysis(data) {
             generateDetailedAnalysis(filteredData);
 
 
-            // =========================================
-            // DAY SELECTOR
-            // =========================================
 
             document
                 .getElementById("daySelector")
@@ -1100,40 +922,25 @@ function generateDetailedAnalysis(data) {
                     updateView(this.value);
                 });
             
-// ------------------------------------
-// Total Energy Consumption
-// ------------------------------------
 const totalEnergy = data.reduce((sum, item) => {
     return sum + Number(item["Energy Consumption in units"]);
 }, 0);
 
 
-// ------------------------------------
-// Total Carbon Emission
-// ------------------------------------
 const totalCarbon = data.reduce((sum, item) => {
     return sum + Number(item["CO2 emissions in kg"]);
 }, 0);
 
-
-// ------------------------------------
-// Highest Energy Consumption
-// ------------------------------------
 const highestConsumption = Math.max(
     ...data.map(item =>
         Number(item["Energy Consumption in units"])
     )
 );
-//-------------------------------------
-// Total Devices Used
-// ------------------------------------
+
 const totalDevices = data.filter(item => item["day"] === "day_1").reduce((sum, item) => {
         return sum + Number(item["Total number of appliance"]);
     }, 0);
 
-// ------------------------------------
-// Display in HTML
-// ------------------------------------
 
 document.getElementById("totalEnergy").innerText = totalEnergy.toFixed(2);
 
@@ -1143,9 +950,6 @@ document.getElementById("devices").innerText = totalDevices;
 
 document.getElementById("peakUsage").innerText = highestConsumption;
 
-            // =========================================
-            // SLIDER
-            // =========================================
 
             document
                 .getElementById("daySlider")
@@ -1168,9 +972,6 @@ document.getElementById("peakUsage").innerText = highestConsumption;
         });
     
         
-    // =========================================
-    // OPEN MODAL
-    // =========================================
 
     window.openRoomModal = function (category) {
 
@@ -1178,52 +979,28 @@ document.getElementById("peakUsage").innerText = highestConsumption;
 
         let config = ROOM_CONFIG[category];
 
-        document
-            .getElementById("categoryTitle")
-            .innerText = config.title;
+        document.getElementById("categoryTitle").innerText = config.title;
 
-        document
-            .getElementById("modalImage")
-            .src = config.image;
+        document.getElementById("modalImage").src = config.image;
 
-        document
-            .getElementById("modalIcon")
-            .innerText = config.icon;
+        document.getElementById("modalIcon").innerHTML = `<i class="fas ${config.icon}"></i>`;
 
-        document
-            .getElementById("modalOverlay")
-            .classList.remove("hidden");
+        document.getElementById("modalOverlay").classList.remove("hidden");
 
         loadRooms(category);
     };
 
-    // =========================================
-    // CLOSE MODAL
-    // =========================================
 
-    window.closeModal = function () {
+    window.closeModal = function () { document.getElementById("modalOverlay").classList.add("hidden");};
 
-        document
-            .getElementById("modalOverlay")
-            .classList.add("hidden");
-    };
-
-    // =========================================
-    // LOAD ROOMS
-    // =========================================
 
     function loadRooms(category) {
 
-        let stored =
-            localStorage.getItem(STORAGE_KEY);
+        let stored = localStorage.getItem(STORAGE_KEY);
 
-        let allRooms =
-            stored ? JSON.parse(stored) : {};
+        let allRooms = stored ? JSON.parse(stored) : {};
 
-        if (
-            !allRooms[category] ||
-            allRooms[category].length === 0
-        ) {
+        if (!allRooms[category] || allRooms[category].length === 0) {
 
             allRooms[category] =
                 DEFAULT_ROOMS[category];
@@ -1239,41 +1016,26 @@ document.getElementById("peakUsage").innerText = highestConsumption;
         renderRooms();
     }
 
-    // =========================================
-    // SAVE ROOMS
-    // =========================================
 
     function saveRooms() {
 
-        let stored =
-            localStorage.getItem(STORAGE_KEY);
+        let stored = localStorage.getItem(STORAGE_KEY);
 
-        let allRooms =
-            stored ? JSON.parse(stored) : {};
+        let allRooms = stored ? JSON.parse(stored) : {};
 
         allRooms[currentCategory] = rooms;
 
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(allRooms)
-        );
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allRooms));
     }
 
-    // =========================================
-    // RENDER ROOMS
-    // =========================================
 
     function renderRooms() {
 
-    const roomList =
-    document.getElementById("roomList");
+    const roomList = document.getElementById("roomList");
 
     roomList.innerHTML = "";
 
-    document
-    .getElementById("roomCount")
-    .innerText =
-    `${rooms.length} rooms configured`;
+    document.getElementById("roomCount").innerText = `${rooms.length} rooms configured`;
 
     rooms.forEach(room => {
 
@@ -1286,16 +1048,13 @@ document.getElementById("peakUsage").innerText = highestConsumption;
 
         <div class="room-left">
 
-            <div
-                class="room-name-container"
-            >
+            <div class="room-name-container">
 
                 <span
                     class="room-name"
                     id="room-name-${room.id}"
                     ondblclick="enableRename('${room.id}')"
-                    onclick="goToRoom('${room.name}')"
-                >
+                    onclick="goToRoom('${room.name}')">
                     ${room.name}
                 </span>
 
@@ -1308,16 +1067,14 @@ document.getElementById("peakUsage").innerText = highestConsumption;
             <button
                 class="rename-btn"
                 onclick="enableRename('${room.id}')"
-                title="Rename Room"
-            >
+                title="Rename Room">
                 ✏
             </button>
 
             <button
                 class="delete-btn"
                 onclick="deleteRoom('${room.id}')"
-                title="Delete Room"
-            >
+                title="Delete Room">
                 🗑
             </button>
 
@@ -1329,9 +1086,6 @@ document.getElementById("peakUsage").innerText = highestConsumption;
     });
 }
    
-    // =========================================
-    // SHOW ADD ROOM
-    // =========================================
 
     const addRoomBtn =
         document.getElementById("showAddRoomBtn");
@@ -1350,9 +1104,6 @@ document.getElementById("peakUsage").innerText = highestConsumption;
         });
     }
 
-    // =========================================
-    // CANCEL ADD ROOM
-    // =========================================
 
     window.cancelAddRoom = function () {
 
@@ -1375,11 +1126,9 @@ document.getElementById("peakUsage").innerText = highestConsumption;
 
     window.addRoom = function () {
 
-        let input =
-            document.getElementById("roomInput");
+        let input = document.getElementById("roomInput");
 
-        let name =
-            input.value.trim();
+        let name = input.value.trim();
 
         if (!name) {
 
@@ -1388,10 +1137,7 @@ document.getElementById("peakUsage").innerText = highestConsumption;
             return;
         }
 
-        let exists = rooms.some(room =>
-            room.name.toLowerCase() ===
-            name.toLowerCase()
-        );
+        let exists = rooms.some(room => room.name.toLowerCase() === name.toLowerCase());
 
         if (exists) {
 
@@ -1400,12 +1146,7 @@ document.getElementById("peakUsage").innerText = highestConsumption;
             return;
         }
 
-        rooms.push({
-
-            id: Date.now().toString(),
-
-            name: name
-        });
+        rooms.push({id: Date.now().toString(), name: name});
 
         saveRooms();
 
@@ -1414,19 +1155,14 @@ document.getElementById("peakUsage").innerText = highestConsumption;
         cancelAddRoom();
     };
 
-    // =========================================
-    // RENAME ROOM
-    // =========================================
 
     window.renameRoom = function (id) {
 
-        let room =
-            rooms.find(room => room.id === id);
+        let room = rooms.find(room => room.id === id);
 
         if (!room) return;
 
-        let newName =
-            prompt("Rename room", room.name);
+        let newName = prompt("Rename room", room.name);
 
         if (!newName) return;
 
@@ -1441,35 +1177,18 @@ document.getElementById("peakUsage").innerText = highestConsumption;
         renderRooms();
     };
 
-    // =========================================
-// DELETE ROOM
-// =========================================
 
 window.deleteRoom = function (id) {
 
-    // =========================================
-    // REMOVE ROOM
-    // =========================================
 
-    rooms =
-    rooms.filter(room => room.id !== id);
-
-    // =========================================
-    // SAVE UPDATED ROOMS
-    // =========================================
+    rooms = rooms.filter(room => room.id !== id);
 
     saveRooms();
 
-    // =========================================
-    // IF ALL ROOMS DELETED
-    // SHOW EMPTY STATE
-    // =========================================
-
+    //if all rooms are deleted, show empty state
     if (rooms.length === 0) {
 
-        document
-        .getElementById("roomList")
-        .innerHTML = `
+        document.getElementById("roomList").innerHTML = `
 
         <div class="empty-room-state">
 
@@ -1488,49 +1207,26 @@ window.deleteRoom = function (id) {
         </div>
         `;
 
-        document
-        .getElementById("roomCount")
-        .innerText =
-        "0 rooms configured";
+        document.getElementById("roomCount").innerText = "0 rooms configured";
 
         return;
     }
 
-    // =========================================
-    // NORMAL RENDER
-    // =========================================
 
     renderRooms();
 };
 
-    // =========================================
-// ENABLE RENAME
-// =========================================
 
 window.enableRename = function (id) {
 
-    // =========================================
-    // FIND ROOM
-    // =========================================
 
-    let room =
-    rooms.find(room => room.id === id);
+    let room = rooms.find(room => room.id === id);
 
     if (!room) return;
 
-    // =========================================
-    // GET ELEMENT
-    // =========================================
+    const span = document.getElementById(`room-name-${id}`);
 
-    const span =
-    document.getElementById(`room-name-${id}`);
-
-    const oldName =
-    room.name;
-
-    // =========================================
-    // REPLACE WITH INPUT
-    // =========================================
+    const oldName = room.name;
 
     span.innerHTML = `
 
@@ -1538,72 +1234,36 @@ window.enableRename = function (id) {
         type="text"
         id="rename-input-${id}"
         value="${oldName}"
-        class="rename-input"
-    >
+        class="rename-input">
     `;
 
-    // =========================================
-    // GET INPUT
-    // =========================================
 
-    const input =
-    document.getElementById(`rename-input-${id}`);
+    const input = document.getElementById(`rename-input-${id}`);
 
     input.focus();
 
     input.select();
 
-    // =========================================
-    // PREVENT ROOM NAVIGATION
-    // =========================================
 
-    input.addEventListener("click", function(e){
+    input.addEventListener("click", function(e){e.stopPropagation();});
 
-        e.stopPropagation();
-    });
+    input.addEventListener("keydown", function(e){e.stopPropagation();});
 
-    input.addEventListener("keydown", function(e){
+    input.addEventListener("keyup", function(e){e.stopPropagation();});
 
-        e.stopPropagation();
-    });
-
-    input.addEventListener("keyup", function(e){
-
-        e.stopPropagation();
-    });
-
-    // =========================================
-    // SAVE RENAME
-    // =========================================
 
     function saveRename() {
 
-        let newName =
-        input.value.trim();
+        let newName = input.value.trim();
 
-        // =====================================
-        // EMPTY NAME -> RESTORE OLD
-        // =====================================
 
         if (!newName) {
 
             newName = oldName;
         }
 
-        // =====================================
-        // DUPLICATE CHECK
-        // =====================================
 
-        let duplicate =
-        rooms.some(r =>
-
-            r.name.toLowerCase() ===
-            newName.toLowerCase()
-
-            &&
-
-            r.id !== id
-        );
+        let duplicate = rooms.some(r => r.name.toLowerCase() === newName.toLowerCase() && r.id !== id);
 
         if (duplicate) {
 
@@ -1614,9 +1274,6 @@ window.enableRename = function (id) {
             return;
         }
 
-        // =====================================
-        // SAVE
-        // =====================================
 
         room.name = newName;
 
@@ -1625,17 +1282,11 @@ window.enableRename = function (id) {
         renderRooms();
     }
 
-    // =========================================
-    // KEY EVENTS
-    // =========================================
 
     input.addEventListener(
         "keydown",
         function (e) {
 
-            // =================================
-            // ENTER -> SAVE
-            // =================================
 
             if (e.key === "Enter") {
 
@@ -1644,9 +1295,6 @@ window.enableRename = function (id) {
                 saveRename();
             }
 
-            // =================================
-            // ESC -> CANCEL
-            // =================================
 
             if (e.key === "Escape") {
 
@@ -1657,40 +1305,19 @@ window.enableRename = function (id) {
         }
     );
 
-    // =========================================
-    // CLICK OUTSIDE -> SAVE
-    // =========================================
 
-    input.addEventListener(
-        "blur",
-        saveRename
-    );
+    input.addEventListener("blur", saveRename);
 };
-    // =========================================
-    // GO TO ROOM
-    // =========================================
 
     window.goToRoom = function (room_name) {
 
-        localStorage.setItem(
-            "selectedRoomLabel",
-            room_name
-        );
+        localStorage.setItem("selectedRoomLabel", room_name);
 
-        const roomSlug =
+        const roomSlug = room_name.toLowerCase().replaceAll(" ", "-");
 
-            room_name
-                .toLowerCase()
-                .replaceAll(" ", "-");
-
-        window.location.href =
-            "/room?room=" +
-            encodeURIComponent(roomSlug);
+        window.location.href = "/room?room=" + encodeURIComponent(roomSlug);
     };
 
-    // =========================================
-    // OUTSIDE CLICK
-    // =========================================
 
     document
         .getElementById("modalOverlay")
@@ -1702,9 +1329,6 @@ window.enableRename = function (id) {
             }
         });
 
-    // =========================================
-    // ESC CLOSE
-    // =========================================
 
     document.addEventListener("keydown", function (e) {
 
@@ -1714,18 +1338,12 @@ window.enableRename = function (id) {
         }
     });
 
-    // =========================================
-    // BACK BUTTON
-    // =========================================
 
     window.goBack = function () {
 
         window.location.href = "index.html";
     };
 
-    // =========================================
-    // GO TO DASHBOARD
-    // =========================================
 
     window.goToDashboard = function () {
 

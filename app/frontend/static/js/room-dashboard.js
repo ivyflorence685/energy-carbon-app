@@ -1,17 +1,9 @@
-// =========================================
-// GET ROOM NAME FROM URL
-// Example:
-// room-dashboard.html?room=kitchen
-// =========================================
-
+// get room from URL
 const params = new URLSearchParams(window.location.search);
 
 const roomParam = params.get("room");
 
-// =========================================
-// ROOM NAME MAPPING
-// =========================================
-
+// Room Name Mapping for Internal Use
 const roomMap = {
 
     "living-room": "Living room",
@@ -31,10 +23,7 @@ const roomMap = {
     "dining-room": "Dining room"
 };
 
-// =========================================
-// DISPLAY TITLE MAPPING
-// =========================================
-
+// display title mapping 
 const displayMap = {
 
     "living-room": "Living Room",
@@ -54,29 +43,21 @@ const displayMap = {
     "dining-room": "Dining Room"
 };
 
-// =========================================
-// CURRENT ROOM
-// =========================================
 
+//current room 
 const roomName =
     roomMap[roomParam] || "Living room";
 
 const displayName =
     displayMap[roomParam] || "Living Room";
 
-// =========================================
-// UPDATE TITLE
-// =========================================
 
+//update title
 document.getElementById("roomTitle").innerText =
     displayName + " Analysis";
 
 let lineChart;
 let barChart;
-
-// =========================================
-// FETCH DATA
-// =========================================
 
 fetch("/data")
 
@@ -84,9 +65,6 @@ fetch("/data")
 
 .then(fullData => {
 
-    // =========================================
-   // NORMALIZE ROOM NAMES
-   // =========================================
 
 function normalizeRoom(room) {
 
@@ -98,80 +76,42 @@ function normalizeRoom(room) {
         .trim();
 }
 
-// =========================================
-// FILTER ROOM DATA
-// =========================================
+//filter room data
+const data = fullData.filter(item => normalizeRoom(item.Room) === normalizeRoom(roomName));
 
-const data = fullData.filter(item =>
+    const totalEnergy = data.reduce((sum, item) => sum + parseFloat(item["Energy Consumption in units"] || 0), 0);
 
-    normalizeRoom(item.Room) ===
-    normalizeRoom(roomName)
-);
-
-    // =========================================
-    // TOTALS
-    // =========================================
-
-    const totalEnergy = data.reduce((sum, item) =>
-
-        sum + parseFloat(item["Energy Consumption in units"] || 0)
-
-    , 0);
-
-    const totalCarbon = data.reduce((sum, item) =>
-
-        sum + parseFloat(item["CO2 emissions in kg"] || 0)
-
-    , 0);
+    const totalCarbon = data.reduce((sum, item) => sum + parseFloat(item["CO2 emissions in kg"] || 0), 0);
 
     const avgDailyEnergy = totalEnergy / 7;
 
-    const peakUsage = Math.max(
+    const peakUsage = Math.max(...data.map(item => parseFloat(item["Energy Consumption in units"] || 0)));
 
-        ...data.map(item =>
+    
+    //update stats
+    document.getElementById("totalEnergy").innerText = totalEnergy.toFixed(2) + " kWh";
 
-            parseFloat(item["Energy Consumption in units"] || 0)
-        )
-    );
+    document.getElementById("totalCarbon").innerText = totalCarbon.toFixed(2) + " kg";
 
-    // =========================================
-    // UPDATE STATS
-    // =========================================
+    document.getElementById("dailyAverage").innerText = avgDailyEnergy.toFixed(2) + " kWh";
 
-    document.getElementById("totalEnergy").innerText =
-        totalEnergy.toFixed(2) + " kWh";
+    document.getElementById("peakUsage").innerText = peakUsage.toFixed(2) + " kWh";
 
-    document.getElementById("totalCarbon").innerText =
-        totalCarbon.toFixed(2) + " kg";
-
-    document.getElementById("dailyAverage").innerText =
-        avgDailyEnergy.toFixed(2) + " kWh";
-
-    document.getElementById("peakUsage").innerText =
-        peakUsage.toFixed(2) + " kWh";
-
-    // =========================================
-    // DAILY DATA
-    // =========================================
-
+    
+    //daily data
     const dailyMap = {};
 
     data.forEach(item => {
 
         const day = item.day;
 
-        const energy =
-            parseFloat(item["Energy Consumption in units"] || 0);
+        const energy = parseFloat(item["Energy Consumption in units"] || 0);
 
-        const carbon =
-            parseFloat(item["CO2 emissions in kg"] || 0);
+        const carbon = parseFloat(item["CO2 emissions in kg"] || 0);
 
         if (!dailyMap[day]) {
 
-            dailyMap[day] = {
-                energy: 0,
-                carbon: 0
-            };
+            dailyMap[day] = {energy: 0, carbon: 0};
         }
 
         dailyMap[day].energy += energy;
@@ -181,18 +121,12 @@ const data = fullData.filter(item =>
 
     const labels = Object.keys(dailyMap);
 
-    const energyData = labels.map(day =>
-        dailyMap[day].energy.toFixed(2)
-    );
+    const energyData = labels.map(day => dailyMap[day].energy.toFixed(2));
 
-    const carbonData = labels.map(day =>
-        dailyMap[day].carbon.toFixed(2)
-    );
+    const carbonData = labels.map(day => dailyMap[day].carbon.toFixed(2));
 
-    // =========================================
-    // LINE CHART
-    // =========================================
-
+    
+    //line chart
     if (lineChart) {
         lineChart.destroy();
     }
@@ -230,18 +164,15 @@ const data = fullData.filter(item =>
         }
     );
 
-    // =========================================
-    // APPLIANCE DATA
-    // =========================================
-
+  
+    //appliance data
     const applianceMap = {};
 
     data.forEach(item => {
 
         const appliance = item.Appliance;
 
-        const energy =
-            parseFloat(item["Energy Consumption in units"] || 0);
+        const energy = parseFloat(item["Energy Consumption in units"] || 0);
 
         if (!applianceMap[appliance]) {
             applianceMap[appliance] = 0;
@@ -252,14 +183,10 @@ const data = fullData.filter(item =>
 
     const applianceLabels = Object.keys(applianceMap);
 
-    const applianceEnergy = applianceLabels.map(appliance =>
-        applianceMap[appliance].toFixed(2)
-    );
+    const applianceEnergy = applianceLabels.map(appliance => applianceMap[appliance]);
 
-    // =========================================
-    // BAR CHART
-    // =========================================
-
+    
+    //bar chart
     if (barChart) {
         barChart.destroy();
     }
@@ -287,9 +214,6 @@ const data = fullData.filter(item =>
         }
     );
 
-    // =========================================
-    // TOP APPLIANCE
-    // =========================================
 
     const topAppliance = applianceLabels[
         applianceEnergy.indexOf(
@@ -297,17 +221,14 @@ const data = fullData.filter(item =>
         )
     ];
 
-    // =========================================
-    // INSIGHTS
-    // =========================================
-
+   
+    //insight 
     document.getElementById("insightText").innerHTML = `
 
         The <b>${displayName}</b> consumed
         <b>${totalEnergy.toFixed(2)} kWh</b>
         this week generating
         <b>${totalCarbon.toFixed(2)} kg CO₂</b>.
-
         <br><br>
 
         Top energy consumer:
@@ -320,9 +241,7 @@ const data = fullData.filter(item =>
         energy optimization.
     `;
 
-    // =========================================
-    // TABLE
-    // =========================================
+    
 
     let tableHTML = "";
 
@@ -332,7 +251,7 @@ const data = fullData.filter(item =>
 
             <tr>
 
-                <td>${item.day}</td>
+                <td>${item.day.replace("_", " ")}</td>
 
                 <td>${item.date}</td>
 
@@ -346,9 +265,9 @@ const data = fullData.filter(item =>
 
                 <td>${item["Utilization Hours"]}</td>
 
-                <td>${item["Energy Consumption in units"]}</td>
+                <td>${Number(item["Energy Consumption in units"]).toFixed(2)}</td>
 
-                <td>${item["CO2 emissions in kg"]}</td>
+                <td>${Number(item["CO2 emissions in kg"]).toFixed(2)}</td>
 
             </tr>
         `;
@@ -358,90 +277,55 @@ const data = fullData.filter(item =>
         tableHTML;
 });
 
-// =====================================
-// SMART METER SIMULATION
-// =====================================
+
 
 function updateSmartMeter() {
 
-    // RANDOM POWER DRAW
 
-    const power =
-        Math.floor(Math.random() * 400) + 300;
+    const power = Math.floor(Math.random() * 400) + 300;
 
-    // VOLTAGE
 
-    const voltage =
-        (220 + Math.random() * 5).toFixed(1);
+    const voltage = (220 + Math.random() * 5).toFixed(1);
 
-    // CURRENT
 
-    const current =
-        (power / voltage).toFixed(2);
+    const current = (power / voltage).toFixed(2);
 
-    // POWER FACTOR
+   
+    const powerFactor = (0.80 + Math.random() * 0.19).toFixed(2);
 
-    const powerFactor =
-        (0.80 + Math.random() * 0.19).toFixed(2);
 
-    // DAILY ENERGY
+    const energy = (Math.random() * 8).toFixed(2);
 
-    const energy =
-        (Math.random() * 8).toFixed(2);
 
-    // CO2
+    const co2 = (energy * 0.82).toFixed(2);
 
-    const co2 =
-        (energy * 0.82).toFixed(2);
 
-    // CAPACITY %
+    const percentage = ((power / 700) * 100).toFixed(1);
 
-    const percentage =
-        ((power / 700) * 100).toFixed(1);
+    
+    //update smart meter values
+    document.getElementById("powerDraw").innerText = power;
 
-    // =====================================
-    // UPDATE UI
-    // =====================================
+    document.getElementById("voltage").innerText = voltage;
 
-    document.getElementById("powerDraw")
-        .innerText = power;
+    document.getElementById("current").innerText = current;
 
-    document.getElementById("voltage")
-        .innerText = voltage;
+    document.getElementById("powerFactor").innerText = powerFactor;
 
-    document.getElementById("current")
-        .innerText = current;
+    document.getElementById("todayEnergy").innerText = energy + " kWh";
 
-    document.getElementById("powerFactor")
-        .innerText = powerFactor;
+    document.getElementById("todayCO2").innerText = co2 + " kg";
 
-    document.getElementById("todayEnergy")
-        .innerText = energy + " kWh";
+    document.getElementById("capacityText").innerText = percentage + "% of maximum capacity";
 
-    document.getElementById("todayCO2")
-        .innerText = co2 + " kg";
+    document.getElementById("progressFill").style.width = percentage + "%";
 
-    document.getElementById("capacityText")
-        .innerText =
-        percentage + "% of maximum capacity";
-
-    document.getElementById("progressFill")
-        .style.width = percentage + "%";
-
-    document.getElementById("lastUpdate")
-        .innerText =
-        new Date().toLocaleTimeString();
+    document.getElementById("lastUpdate").innerText = new Date().toLocaleTimeString();
 }
 
-// =====================================
-// INITIAL CALL
-// =====================================
 
+// Initial call
 updateSmartMeter();
-
-// =====================================
-// UPDATE EVERY 2 SECONDS
-// =====================================
 
 setInterval(updateSmartMeter, 2000);
 
