@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Room Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <button onclick="goBack()">←</button>
+
+        <div>
+            <h1 id="roomTitle">Living Room Analysis</h1>
+            <p>Detailed energy consumption and smart meter readings</p>
+        </div>
+    </div>
+
+    <!-- STATS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h3>Total Energy</h3>
+            <p id="totalEnergy">0 kWh</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Carbon Emission</h3>
+            <p id="totalCarbon">0 kg</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Daily Average</h3>
+            <p id="dailyAverage">0 kWh</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Peak Usage</h3>
+            <p id="peakUsage">0 kWh</p>
+        </div>
+
+    </div>
+     
+    <!-- ===================================== -->
+<!-- SMART METER -->
+<!-- ===================================== -->
+
+<div class="smart-meter-card">
+
+    <div class="meter-header">
+
+        <div>
+            <h2>Smart Meter - Live Readings</h2>
+            <p>Real-time power consumption data</p>
+        </div>
+
+        <div class="meter-icon">
+            ⚡
+        </div>
+
+    </div>
+
+    <!-- MAIN POWER -->
+
+    <div class="main-power-box">
+
+        <p class="meter-label">Current Power Draw</p>
+
+        <h1>
+            <span id="powerDraw">492</span>
+            <span class="unit">W</span>
+        </h1>
+
+        <div class="meter-progress">
+
+            <div
+                class="meter-progress-fill"
+                id="progressFill">
+            </div>
+
+        </div>
+
+        <p id="capacityText">
+            72.9% of maximum capacity
+        </p>
+
+    </div>
+
+    <!-- METER STATS -->
+
+    <div class="meter-grid">
+
+        <div class="meter-stat">
+
+            <p>Voltage</p>
+
+            <h3 id="voltage">221.2</h3>
+
+            <span>Volts</span>
+
+        </div>
+
+        <div class="meter-stat">
+
+            <p>Current</p>
+
+            <h3 id="current">2.24</h3>
+
+            <span>Amperes</span>
+
+        </div>
+
+        <div class="meter-stat">
+
+            <p>Power Factor</p>
+
+            <h3 id="powerFactor">0.84</h3>
+
+            <span>PF</span>
+
+        </div>
+
+    </div>
+
+    <!-- DAILY CONSUMPTION -->
+
+    <div class="today-box">
+
+        <h3>Today's Consumption</h3>
+
+        <div class="today-grid">
+
+            <div>
+
+                <p>Energy Used</p>
+
+                <h2 id="todayEnergy">3.94 kWh</h2>
+
+            </div>
+
+            <div>
+
+                <p>CO₂ Generated</p>
+
+                <h2 id="todayCO2">3.23 kg</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="meter-footer">
+
+        <span class="status-dot"></span>
+
+        Meter Status: Active • Last Update:
+        <span id="lastUpdate">Just now</span>
+
+    </div>
+
+</div>
+
+    <!-- CHARTS -->
+
+    <div class="chart-grid">
+
+        <div class="chart-card">
+            <h3>Weekly Energy Trend</h3>
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Appliance Consumption</h3>
+            <canvas id="barChart"></canvas>
+        </div>
+
+    </div>
+
+    <!-- INSIGHTS -->
+
+    <div class="insights-card">
+
+        <h3>Room Specific Insights</h3>
+
+        <p id="insightText"></p>
+
+    </div>
+
+    <!-- TABLE -->
+
+    <div class="table-card">
+
+        <h3>Detailed Data</h3>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Date</th>
+                    <th>Appliance</th>
+                    <th>Number of appliances</th>
+                    <th>Number of appliance in use</th>
+                    <th>Wattage</th>
+                    <th>Hours</th>
+                    <th>Energy(kWh)</th>
+                    <th>CO₂(kg)</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableBody"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/room-dashboard.js') }}"></script>
+
+</body>
+</html>

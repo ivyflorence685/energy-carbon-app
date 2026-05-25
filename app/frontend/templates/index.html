@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Energy Dashboard</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <!-- FONT AWESOME -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<aside class="sidebar">
+
+    <!-- LOGO -->
+    <div class="sidebar-header">
+
+        <div class="logo-icon">
+            <i class="fa-solid fa-chart-column"></i>
+        </div>
+
+        <div>
+            <h2 class="logo-title">EcoTrack</h2>
+            <p class="logo-subtitle">Carbon Monitor</p>
+        </div>
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav>
+
+        <a href="#Main" class="active">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Overview</span>
+        </a>
+
+        <a href="#Alerts">
+            <i class="fa-regular fa-bell"></i>
+            <span>Alerts & Notifications</span>
+        </a>
+
+        <a href="#Rooms">
+            <i class="fa-solid fa-house"></i>
+            <span>Room-wise Analysis</span>
+        </a>
+
+        <a href="#chartsSection">
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Charts & Trends</span>
+        </a>
+
+        <a href="#detailedAnalysis">
+            <i class="fa-regular fa-lightbulb"></i>
+            <span>Detailed Analysis</span>
+        </a>
+
+        <a href="#Data">
+            <i class="fa-regular fa-table-columns"></i>
+            <span>Data Table</span>
+        </a>
+
+    </nav>
+
+    <!-- FOOTER CARD -->
+    <div class="goal-card">
+
+        <p class="goal-title">
+            Weekly Reduction Goal
+        </p>
+
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+
+        <p class="goal-text">65% Complete</p>
+
+    </div>
+
+</aside>
+    <!-- MAIN -->
+    <main id = "Main" class="main">
+
+        <!-- HEADER -->
+        <header class="topbar">
+            <div>
+                <h1>Carbon Emission Dashboard</h1>
+                <p style="color:rgb(203, 213, 225); margin-top: 8px;">Monitor energy consumption and sustainability metrics</p>
+            </div>
+
+            <div class="top-actions">
+                <a href="#" class="icon-button"><i class="fa-regular fa-bell" style="color: rgb(255, 255, 255);"></i></a>
+            </div>
+        </header>
+
+        <!-- CARDS -->
+        <section class="cards">
+            <div class="card">
+                <h4>Total Energy</h4>
+                <p><span id="totalEnergy"></span> kWh</p>
+            </div>
+
+            <div class="card">
+                <h4>Total CO₂</h4>
+                <p><span id="totalCO2"></span> kg</p>
+            </div>
+
+            <div class="card">
+                <h4>Devices</h4>
+                <p><span id="devices"></span></p>
+            </div>
+
+            <div class="card">
+                <h4>Peak Usage</h4>
+                <p><span id="peakUsage"></span> kWh</p>
+            </div>
+        </section>
+        <!-- ALERT -->
+         <div id="Alerts" class="box-header">
+            <div class="container">
+                <div class="flex-wrapper">
+                    <div class="icon-box"><i class="fa-regular fa-bell" style="color: rgb(255, 255, 255);"></i></div>
+                       <div class="header-content">
+                        <h3>Active Alerts & Notifications</h3>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <section class="alerts">
+            <div class="sub-header">
+               <p><i class="fa-regular fa-bell" style="color: rgb(0, 0, 0);"></i> Active Alerts & Notifications</p>
+            </div>
+        <div class="alerts-list" id="alertsList"></div>
+        </section>
+        <!--ROOM-WISE ANALYSIS HEADER-->
+        <div id="Rooms" class="box-header">
+           <div class="container">
+             <div class="flex-wrapper">
+
+            <!-- Icon -->
+            <div class="icon-box">
+                <i class="fa-regular fa-house"></i>
+            </div>
+
+            <!-- Text Content -->
+            <div class="header-content">
+                <h3>Room-wise Analysis</h3>
+                <p>Click on any room to view detailed analysis</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+        <!-- FLEX -->
+         <section  class="room-wise" >
+         <div class ="room-cards-header">
+            <p>Room-wise Analysis</p>
+          </div>
+        <div class="room-container">
+  <div class="room-card" onclick="openRoomModal('living-room')">
+    <h3>Living Room</h3>
+  </div>
+
+  <div class="room-card" onclick="openRoomModal('kitchen')">
+    <h3>Kitchen</h3>
+  </div>
+
+  <div class="room-card" onclick="openRoomModal('bedroom')">
+    <h3>Bedroom</h3>
+  </div>
+
+  <div class="room-card" onclick="openRoomModal('bathroom')">
+    <h3>Bathroom</h3>
+  </div>
+
+  <div class="room-card" onclick="openRoomModal('study-room')">
+    <h3>Study</h3>
+  </div>
+
+  <div class="room-card" onclick="openRoomModal('dining-room')">
+    <h3>Dining Room</h3>
+  </div>
+</div>
+</section>
+
+         <div id="chartsSection" class="box-header">
+            <div class="container">
+                <div class="flex-wrapper">
+                    <div class="icon-box"><i class="fa-solid fa-chart-column"></i></div>
+                       <div class="header-content">
+                        <h3>Charts & Trends</h3>
+                        <p>Visual representation of energy consumption and CO₂ emissions</p>
+                        </div>
+                </div>
+            </div>
+      </div> 
+        <!-- FILTER -->
+        <section class="filter">
+            <select id="daySelector"></select>
+
+            <input type="range" id="daySlider" min="1" max="10" value="1">
+            <span id="sliderValue">Day 1</span>
+        </section>
+
+        <!-- CHARTS -->
+
+        <section id="Charts" class="charts">
+            <div class="chart-card">
+                <h3>Energy Usage</h3>
+                <canvas id="energyChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>CO₂ Emissions</h3>
+                <canvas id="co2Chart"></canvas>
+            </div>
+        </section>
+
+        
+<!-- ========================================= -->
+<!-- DETAILED ANALYSIS -->
+<!-- ========================================= -->
+
+    <div id="detailedAnalysis" class="box-header">
+            <div class="container">
+                <div class="flex-wrapper">
+                    <div class="icon-box"><i class="fa-solid fa-lightbulb"></i></div>
+                       <div class="header-content">
+                        <h3>Detailed Analysis</h3>
+                        <p>Insights and recommendations for energy optimization</p>
+                        </div>
+                </div>
+            </div>
+      </div>
+     
+    <div class="analysis-container">
+
+        <p style="font-size: 18px; font-weight: 600; color: #1d3557; margin-bottom: 20px;">Detailed Analysis</p>
+
+        <!-- OVERALL -->
+        <div class="analysis-card">
+
+            <div class="analysis-title blue">
+                <i class="fa-solid fa-circle-info"></i>
+                <h4>Overall Consumption Pattern</h4>
+            </div>
+
+            <p id="overallAnalysis"></p>
+
+        </div>
+
+        <!-- HIGH IMPACT -->
+        <div class="analysis-card">
+
+            <div class="analysis-title orange">
+                <i class="fa-solid fa-chart-line"></i>
+                <h4>High Impact Appliances</h4>
+            </div>
+
+            <p id="highImpactAnalysis"></p>
+
+        </div>
+
+        <!-- AREAS OF CONCERN -->
+        <div class="analysis-card">
+
+            <div class="analysis-title red">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h4>Areas of Concern</h4>
+            </div>
+
+            <p id="concernAnalysis"></p>
+
+        </div>
+
+        <hr>
+
+        <!-- RECOMMENDATIONS -->
+        <div class="recommendation-section">
+
+            <div class="analysis-title yellow">
+                <i class="fa-solid fa-lightbulb"></i>
+                <h4>Recommendations & Suggestions</h4>
+            </div>
+
+            <ul id="recommendationList"></ul>
+
+        </div>
+
+        <!-- ENVIRONMENTAL IMPACT -->
+        <div class="impact-box">
+
+            <strong>Environmental Impact:</strong>
+
+            <span id="impactText"></span>
+
+        </div>
+
+    </div>
+
+</section>
+        <!-- TABLE -->
+        <div id="Data" class="box-header">
+            <div class="container">
+                <div class="flex-wrapper">
+                    <div class="icon-box"><i class="fa-solid fa-table"></i></div>
+                       <div class="header-content">
+                        <h3>Detailed Consumption Data</h3>
+                        <p>Complete breakdown of energy usage by day, room, and appliance</p>
+                        </div>
+                </div>
+            </div>
+      </div> 
+
+        <div class="table-container">
+
+            <table>
+
+                <!-- FIXED HEADER -->
+
+                <thead>
+
+                    <tr>
+                        <th>DAY</th>
+                        <th>ROOM</th>
+                        <th>APPLIANCE</th>
+                        <th>COUNT</th>
+                        <th>HOURS</th>
+                        <th>ENERGY (KWH)</th>
+                        <th>CO₂ (KG)</th>
+                    </tr>
+
+                </thead>
+
+
+                <!-- DATA COMES HERE -->
+
+                <tbody id="applianceTable">
+
+                </tbody>
+
+            </table>
+
+
+            <!-- FOOTER -->
+
+            <div class="table-footer">
+
+                <p id="tableInfo"></p>
+
+                <div class="pagination">
+
+                    <button id="prevBtn" class="page-btn">
+                        Previous
+                    </button>
+
+                    <span id="pageInfo"></span>
+
+                    <button id="nextBtn" class="page-btn">
+                        Next
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+<!-- ========================================= -->
+<!-- ROOM SELECTOR MODAL -->
+<!-- ========================================= -->
+
+<div id="modalOverlay" class="modal-overlay hidden">
+
+  <div class="modal">
+
+    <!-- HEADER -->
+
+<div class="modal-header">
+
+  <img
+    id="modalImage"
+    src=""
+    class="header-image"
+  >
+
+  <div class="overlay"></div>
+
+  <button
+  class="close-btn1"
+  onclick="goToDashboard()"
+>
+  ✕
+</button>
+
+  <div class="category-info">
+
+    <div id="modalIcon" class="icon-box">
+
+    </div>
+
+    <div>
+
+      <h2 id="categoryTitle">
+        Room
+      </h2>
+
+      <p id="roomCount">
+        0 rooms configured
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+    <!-- BODY -->
+
+    <div class="modal-body">
+
+      <div class="top-row">
+        <p>Select room to analyze</p>
+      </div>
+
+      <!-- ROOM LIST -->
+
+      <div
+        id="roomList"
+        class="room-list"
+      >
+      </div>
+
+
+      <!-- ADD ROOM -->
+
+      <div class="add-room-section">
+
+        <div
+          id="addRoomForm"
+          class="hidden"
+        >
+
+          <div class="input-row">
+
+            <input
+              type="text"
+              id="roomInput"
+              placeholder="Enter room name"
+            >
+
+            <button onclick="addRoom()">
+              Add
+            </button>
+
+          </div>
+
+          <button
+            class="cancel-btn"
+            onclick="cancelAddRoom()"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+
+        <button
+          id="showAddRoomBtn"
+          class="add-room-btn"
+        >
+          + Add Room
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

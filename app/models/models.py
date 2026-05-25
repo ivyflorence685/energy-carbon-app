@@ -1,5 +1,3 @@
-# app/models.py
-
 class ApplianceUsage:
     def __init__(self, data: dict):
         self.day = data.get("day", "unknown")
@@ -27,8 +25,3 @@ class ApplianceUsage:
             if self.energy_units == 0:
                 self.compute_energy_if_missing()
             self.co2 = self.energy_units * emission_factor
-
-
-# function from main branch (kept to avoid losing code)
-def calculate_energy(watts, hours):
-    return watts * hours

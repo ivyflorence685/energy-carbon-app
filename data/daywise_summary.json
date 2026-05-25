@@ -1,0 +1,72 @@
+[
+  {
+    "Day": "Day_1",
+    "Date": "21/2/2026",
+    "Actual power consumption(in units)": "6.11",
+    "Theoretical power consumption(in units)": "6.1725",
+    "Total CO2 emissions(in kg)": "5.06145"
+  },
+  {
+    "Day": "Day_2",
+    "Date": "22/2/2026",
+    "Actual power consumption(in units)": "8.09",
+    "Theoretical power consumption(in units)": "8.078",
+    "Total CO2 emissions(in kg)": "6.62396"
+  },
+  {
+    "Day": "Day_3",
+    "Date": "23/2/2026",
+    "Actual power consumption(in units)": "5.14",
+    "Theoretical power consumption(in units)": "5.113",
+    "Total CO2 emissions(in kg)": "4.19266"
+  },
+  {
+    "Day": "Day_4",
+    "Date": "24/2/2026",
+    "Actual power consumption(in units)": "5.07",
+    "Theoretical power consumption(in units)": "5.07025",
+    "Total CO2 emissions(in kg)": "4.157605"
+  },
+  {
+    "Day": "Day_5",
+    "Date": "25/2/2026",
+    "Actual power consumption(in units)": "5.53",
+    "Theoretical power consumption(in units)": "5.55175",
+    "Total CO2 emissions(in kg)": "4.552435"
+  },
+  {
+    "Day": "Day_6",
+    "Date": "26/2/2026",
+    "Actual power consumption(in units)": "5.18",
+    "Theoretical power consumption(in units)": "5.19675",
+    "Total CO2 emissions(in kg)": "4.261335"
+  },
+  {
+    "Day": "Day_7",
+    "Date": "27/2/2026",
+    "Actual power consumption(in units)": "5.33",
+    "Theoretical power consumption(in units)": "5.34275",
+    "Total CO2 emissions(in kg)": "4.381055"
+  },
+  {
+    "Day": "Day_8",
+    "Date": "28/2/2026",
+    "Actual power consumption(in units)": "6.92",
+    "Theoretical power consumption(in units)": "6.90625",
+    "Total CO2 emissions(in kg)": "5.663125"
+  },
+  {
+    "Day": "Day_9",
+    "Date": "1/3/2026",
+    "Actual power consumption(in units)": "6.81",
+    "Theoretical power consumption(in units)": "6.81975",
+    "Total CO2 emissions(in kg)": "5.592195"
+  },
+  {
+    "Day": "Day_10",
+    "Date": "2/3/2026",
+    "Actual power consumption(in units)": "8.1",
+    "Theoretical power consumption(in units)": "8.05625",
+    "Total CO2 emissions(in kg)": "6.61"
+  }
+]
