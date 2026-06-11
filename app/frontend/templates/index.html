@@ -4,7 +4,7 @@
 <head>
     <title>Energy Dashboard</title>
 
-<!-- Chart.js -->
+//chart.js cdn
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
@@ -16,14 +16,14 @@
 
 <div class="dashboard">
 
-    <!-- SIDEBAR -->
-    <!-- FONT AWESOME -->
+
+    //font awesome
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
 <aside class="sidebar">
 
-    <!-- LOGO -->
+    
     <div class="sidebar-header">
 
         <div class="logo-icon">
@@ -37,7 +37,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
     </div>
 
-    <!-- NAVIGATION -->
+    
     <nav>
 
         <a href="#Main" class="active">
@@ -72,7 +72,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
     </nav>
 
-    <!-- FOOTER CARD -->
+    
     <div class="goal-card">
 
         <p class="goal-title">
@@ -88,10 +88,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     </div>
 
 </aside>
-    <!-- MAIN -->
+    
     <main id = "Main" class="main">
 
-        <!-- HEADER -->
+        
         <header class="topbar">
             <div>
                 <h1>Carbon Emission Dashboard</h1>
@@ -103,7 +103,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             </div>
         </header>
 
-        <!-- CARDS -->
+        
         <section class="cards">
             <div class="card">
                 <h4>Total Energy</h4>
@@ -125,7 +125,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
                 <p><span id="peakUsage"></span> kWh</p>
             </div>
         </section>
-        <!-- ALERT -->
+        
          <div id="Alerts" class="box-header">
             <div class="container">
                 <div class="flex-wrapper">
@@ -142,17 +142,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             </div>
         <div class="alerts-list" id="alertsList"></div>
         </section>
-        <!--ROOM-WISE ANALYSIS HEADER-->
+        
         <div id="Rooms" class="box-header">
            <div class="container">
              <div class="flex-wrapper">
 
-            <!-- Icon -->
+            
             <div class="icon-box">
                 <i class="fa-regular fa-house"></i>
             </div>
 
-            <!-- Text Content -->
+            
             <div class="header-content">
                 <h3>Room-wise Analysis</h3>
                 <p>Click on any room to view detailed analysis</p>
@@ -161,7 +161,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         </div>
     </div>
 </div>
-        <!-- FLEX -->
+        
          <section  class="room-wise" >
          <div class ="room-cards-header">
             <p>Room-wise Analysis</p>
@@ -204,7 +204,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
                 </div>
             </div>
       </div> 
-        <!-- FILTER -->
+        
         <section class="filter">
             <select id="daySelector"></select>
 
@@ -212,7 +212,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             <span id="sliderValue">Day 1</span>
         </section>
 
-        <!-- CHARTS -->
+
 
         <section id="Charts" class="charts">
             <div class="chart-card">
@@ -227,9 +227,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         </section>
 
         
-<!-- ========================================= -->
-<!-- DETAILED ANALYSIS -->
-<!-- ========================================= -->
+
 
     <div id="detailedAnalysis" class="box-header">
             <div class="container">
@@ -247,7 +245,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
         <p style="font-size: 18px; font-weight: 600; color: #1d3557; margin-bottom: 20px;">Detailed Analysis</p>
 
-        <!-- OVERALL -->
+        
         <div class="analysis-card">
 
             <div class="analysis-title blue">
@@ -259,7 +257,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
         </div>
 
-        <!-- HIGH IMPACT -->
+        
         <div class="analysis-card">
 
             <div class="analysis-title orange">
@@ -271,7 +269,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
         </div>
 
-        <!-- AREAS OF CONCERN -->
+        
         <div class="analysis-card">
 
             <div class="analysis-title red">
@@ -285,7 +283,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
         <hr>
 
-        <!-- RECOMMENDATIONS -->
+        
         <div class="recommendation-section">
 
             <div class="analysis-title yellow">
@@ -297,7 +295,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
         </div>
 
-        <!-- ENVIRONMENTAL IMPACT -->
+        
         <div class="impact-box">
 
             <strong>Environmental Impact:</strong>
@@ -309,7 +307,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     </div>
 
 </section>
-        <!-- TABLE -->
+        
         <div id="Data" class="box-header">
             <div class="container">
                 <div class="flex-wrapper">
@@ -326,8 +324,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
             <table>
 
-                <!-- FIXED HEADER -->
-
+            
                 <thead>
 
                     <tr>
@@ -343,8 +340,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
                 </thead>
 
 
-                <!-- DATA COMES HERE -->
-
+                
+                
                 <tbody id="applianceTable">
 
                 </tbody>
@@ -352,7 +349,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             </table>
 
 
-            <!-- FOOTER -->
+            
 
             <div class="table-footer">
 
@@ -384,15 +381,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 
-<!-- ========================================= -->
-<!-- ROOM SELECTOR MODAL -->
-<!-- ========================================= -->
+
 
 <div id="modalOverlay" class="modal-overlay hidden">
 
   <div class="modal">
 
-    <!-- HEADER -->
 
 <div class="modal-header">
 
@@ -434,7 +428,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 </div>
 
 
-    <!-- BODY -->
+    
 
     <div class="modal-body">
 
@@ -442,7 +436,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         <p>Select room to analyze</p>
       </div>
 
-      <!-- ROOM LIST -->
+      
 
       <div
         id="roomList"
@@ -451,7 +445,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       </div>
 
 
-      <!-- ADD ROOM -->
+    
 
       <div class="add-room-section">
 

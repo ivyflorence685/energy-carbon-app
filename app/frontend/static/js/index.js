@@ -237,8 +237,8 @@ const ROOM_CONFIG = {
 
             tableBody.innerHTML += `
             <tr>
-                <td>${item.day}</td>
-                <td>${item.Room}</td>
+                <td>${item.day.replace(/_/g, " ")}</td>
+                <td>${item.Room.replace(/_/g, " ")}</td>
                 <td>${item.Appliance}</td>
                 <td>${item["Number of appliance in use"]}</td>
                 <td>${item["Utilization Hours"]}</td>
@@ -293,7 +293,7 @@ function renderAlerts(filtered) {
             smartDevice: true
         },
 
-        "refrigirator": {
+        "refrigerator": {
             maxHours: 24,
             highEnergy: 2,
             smartDevice: true,
@@ -307,7 +307,7 @@ function renderAlerts(filtered) {
             cyclingDevice: true
         },
 
-        "gyser": {
+        "geyser": {
             maxHours: 1,
             highEnergy: 2,
             thermostatDevice: true,
@@ -534,7 +534,7 @@ function generateDetailedAnalysis(data) {
             efficientEnergy: 0.5
         },
 
-        "refrigirator": {
+        "refrigerator": {
             cycling: true,
             efficientHours: 24,
             efficientEnergy: 2
@@ -546,7 +546,7 @@ function generateDetailedAnalysis(data) {
             efficientEnergy: 0.4
         },
 
-        "gyser": {
+        "geyser": {
             thermostat: true,
             efficientHours: 1,
             efficientEnergy: 2
@@ -753,7 +753,7 @@ function generateDetailedAnalysis(data) {
     }
 
 
-    if (applianceEnergy["gyser"] > 0) {
+    if (applianceEnergy["geyser"] > 0) {
 
         recommendations.push(
             "Use geyser timers or thermostat optimization to minimize unnecessary water heating."
@@ -761,7 +761,7 @@ function generateDetailedAnalysis(data) {
     }
 
 
-    if (applianceEnergy["refrigirator"] > 0) {
+    if (applianceEnergy["refrigerator"] > 0) {
 
         recommendations.push(
             "Avoid frequent refrigerator door opening and ensure proper ventilation around the appliance."

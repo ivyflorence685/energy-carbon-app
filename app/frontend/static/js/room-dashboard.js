@@ -103,7 +103,7 @@ const data = fullData.filter(item => normalizeRoom(item.Room) === normalizeRoom(
 
     data.forEach(item => {
 
-        const day = item.day;
+        const day = item.day.replace(/_/g, " ");
 
         const energy = parseFloat(item["Energy Consumption in units"] || 0);
 
