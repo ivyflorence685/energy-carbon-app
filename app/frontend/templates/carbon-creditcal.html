@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Carbon Credits Calculator</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/carbon-creditcal.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+<header class="topbar">
+
+    <button class="back-btn" onclick="window.history.back()">
+        ←
+    </button>
+    <div class="title-box">
+        <div class="leaf-icon">
+            🌿
+        </div>
+
+        <div>
+            <h1>Carbon Credits Calculator</h1>
+            <p>See how much your energy savings are worth</p>
+        </div>
+    </div>
+
+</header>
+
+<div class="container">
+
+    <!-- STEP 1 -->
+
+    <section class="card">
+
+        <div class="step-title">
+            <span class="step">1</span>
+            <h2>How much energy did your home use this week?</h2>
+        </div>
+
+        <p class="subtitle">
+            Drag the slider to match your weekly electricity usage.
+        </p>
+
+        <div class="slider-top">
+
+            <div>
+                <span id="energyValue" class="big-number">20</span>
+                <span>kWh / week</span>
+            </div>
+
+            <div class="avg-box">
+                <small>National average</small>
+                <strong>120 kWh/week</strong>
+            </div>
+
+        </div>
+
+        <input
+            type="range"
+            min="20"
+            max="300"
+            value="20"
+            id="energySlider">
+
+        <div class="slider-labels">
+            <span>20 kWh</span>
+            <span>160 kWh</span>
+            <span>300 kWh</span>
+        </div>
+
+        <div id="comparisonBanner" class="banner success">
+            <h3>100 kWh below the national average — great work!</h3>
+            <p>You avoided 82 kg CO₂ compared to average household.</p>
+        </div>
+
+    </section>
+
+    <!-- STEP 2 -->
+
+    <section class="card">
+
+        <div class="step-title">
+            <span class="step">2</span>
+            <h2>Your carbon savings this week</h2>
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-icon green">
+                    ↓
+                </div>
+
+                <small>CO₂ Avoided</small>
+
+                <h3 id="savedCO2">
+                    82.0 kg
+                </h3>
+
+                <p>vs national average</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon orange">
+                    🏆
+                </div>
+
+                <small>Credits Earned</small>
+
+                <h3 id="credits">
+                    0.0820
+                </h3>
+
+                <p>1 credit = 1000 kg CO₂</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon green">
+                    ₹
+                </div>
+
+                <small>Estimated Value</small>
+
+                <h3 id="value">
+                    ₹224
+                </h3>
+
+                <p>Range ₹103 - ₹344</p>
+
+            </div>
+
+        </div>
+
+        <div class="comparison-grid">
+
+    <!-- Gauge -->
+
+    <div class="comparison-card">
+
+        <p class="section-label">
+            Efficiency vs national average
+        </p>
+
+        <div class="gauge-wrapper">
+
+            <canvas id="efficiencyGauge"></canvas>
+
+            <div class="gauge-center">
+
+                <span id="efficiencyPercent">
+                    0%
+                </span>
+
+                <small>better</small>
+
+            </div>
+
+        </div>
+
+        <p id="efficiencyMessage"
+           class="gauge-message">
+        </p>
+
+    </div>
+
+
+    <!-- Trend -->
+
+    <div class="comparison-card">
+
+        <p class="section-label">
+            Daily CO₂ — you vs national average
+        </p>
+
+        <div class="trend-wrapper">
+
+            <canvas id="trendChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+    </section>
+
+    <!-- STEP 3 -->
+
+    <section class="card">
+
+        <div class="step-title">
+            <span class="step">3</span>
+            <h2>What your savings mean in real life</h2>
+        </div>
+
+        <div class="impact-grid">
+
+            <div class="impact-box">
+                <h3 id="trees">3.78</h3>
+                <p>trees absorbing CO₂ for a year</p>
+            </div>
+
+            <div class="impact-box">
+                <h3 id="km">390.5 km</h3>
+                <p>not driven by a petrol car</p>
+            </div>
+
+            <div class="impact-box">
+                <h3 id="water">180 L</h3>
+                <p>water saved in energy production</p>
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- ROOM BREAKDOWN -->
+<div class="card">
+
+    <div class="collapse-header"
+         onclick="toggleBreakdown()">
+
+        <h3>⚡ Room-wise CO₂ Breakdown</h3>
+
+        <span id="collapseIcon">▲</span>
+
+    </div>
+
+    <div id="roomBreakdown">
+
+        <div class="chart-wrapper">
+            <canvas id="roomChart"></canvas>
+        </div>
+
+        <div id="roomLegend"
+             class="room-legend">
+        </div>
+
+    </div>
+
+</div>
+
+<!-- TIPS -->
+
+<div class="tips-card">
+
+    <h2>
+        🌿 Quick ways to earn more credits
+    </h2>
+
+    <div class="tips-grid">
+
+        <div class="tip-box">
+            <h4>🌡️ Raise AC by 1°C</h4>
+            <p>Saves ~6% energy — biggest single win for Indian homes.</p>
+        </div>
+
+        <div class="tip-box">
+            <h4>💡 Switch to LEDs</h4>
+            <p>Use 80% less power than incandescent bulbs.</p>
+        </div>
+
+        <div class="tip-box">
+            <h4>🚿 Lower water heater</h4>
+            <p>Set to 55°C and insulate the tank.</p>
+        </div>
+
+        <div class="tip-box">
+            <h4>🧊 Fridge discipline</h4>
+            <p>Avoid open-door lingering; clean coils every 6 months.</p>
+        </div>
+
+        <div class="tip-box">
+            <h4>🌞 Add rooftop solar</h4>
+            <p>Offsets grid draw and generates RECs you can trade.</p>
+        </div>
+
+        <div class="tip-box">
+            <h4>⏰ Use off-peak hours</h4>
+            <p>Run heavy loads at night to reduce grid peak stress.</p>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/carbon-creditcal.js') }}" defer></script>
+
+</body>
+</html>

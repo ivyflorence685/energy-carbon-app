@@ -21,6 +21,10 @@ def room_dashboard():
     room_name = request.args.get("room")
     return render_template("room-dashboard.html",room_name=room_name)
 
+@main_routes.route("/carbon-credit-calculator")
+def carbon_credit_calculator():
+    return render_template("carbon-creditCal.html")
+
 # =========================================
 # DATA API
 # ========================================= 
